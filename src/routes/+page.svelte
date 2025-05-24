@@ -1,12 +1,19 @@
 <script lang="ts">
+    import { invoke } from "@tauri-apps/api/core";
   import "../app.css";
   import Icons from "./Icons.svelte";
+
+
+  const closeNote = async () => {
+    invoke("close_note");
+  };
+
 </script>
 
 <Icons />
 
 <main class="note">
-  <nav class="note--start" aria-label="App menu">
+  <nav data-tauri-drag-region class="note--start" aria-label="App menu">
     <!-- new note, options, close note  -->
     <button aria-label="New note" title="New note">
       <svg width="1em" height="1em" viewBox="0 0 1 1">
@@ -18,7 +25,7 @@
         <use href="#ellipsis" />
       </svg>
     </button>
-    <button aria-label="Close note" title="Close note">
+    <button onclick={closeNote} aria-label="Close note" title="Close note">
       <svg width="1em" height="1em" viewBox="0 0 1 1">
         <use href="#x" />
       </svg>
