@@ -68,9 +68,12 @@
 </main>
 
 <style>
+  :global(:is(html, body)) {
+    block-size: 100%;
+  }
+
   .note {
-    width: 385px;
-    height: 400px;
+    block-size: 100%;
     --button-size-1: 30px;
     --button-size-2: 35px;
     --border-radius: 10px;
