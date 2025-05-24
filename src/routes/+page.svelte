@@ -1,156 +1,184 @@
 <script lang="ts">
-  import { invoke } from "@tauri-apps/api/core";
+    import { invoke } from "@tauri-apps/api/core";
+  import "../app.css";
+  import Icons from "./Icons.svelte";
 
-  let name = $state("");
-  let greetMsg = $state("");
 
-  async function greet(event: Event) {
-    event.preventDefault();
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    greetMsg = await invoke("greet", { name });
-  }
+  const closeNote = async () => {
+    invoke("close_note");
+  };
+
 </script>
 
-<main class="container">
-  <h1>Welcome to Tauri + Svelte</h1>
+<Icons />
 
-  <div class="row">
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo vite" alt="Vite Logo" />
-    </a>
-    <a href="https://tauri.app" target="_blank">
-      <img src="/tauri.svg" class="logo tauri" alt="Tauri Logo" />
-    </a>
-    <a href="https://kit.svelte.dev" target="_blank">
-      <img src="/svelte.svg" class="logo svelte-kit" alt="SvelteKit Logo" />
-    </a>
-  </div>
-  <p>Click on the Tauri, Vite, and SvelteKit logos to learn more.</p>
-
-  <form class="row" onsubmit={greet}>
-    <input id="greet-input" placeholder="Enter a name..." bind:value={name} />
-    <button type="submit">Greet</button>
-  </form>
-  <p>{greetMsg}</p>
+<main class="note">
+  <nav data-tauri-drag-region class="note--start" aria-label="App menu">
+    <!-- new note, options, close note  -->
+    <button aria-label="New note" title="New note">
+      <svg width="1em" height="1em" viewBox="0 0 1 1">
+        <use href="#plus" />
+      </svg>
+    </button>
+    <button aria-pressed="false" aria-label="Menu" title="Menu">
+      <svg width="1em" height="1em" viewBox="0 0 1 1">
+        <use href="#ellipsis" />
+      </svg>
+    </button>
+    <button onclick={closeNote} aria-label="Close note" title="Close note">
+      <svg width="1em" height="1em" viewBox="0 0 1 1">
+        <use href="#x" />
+      </svg>
+    </button>
+  </nav>
+  <textarea class="note--mid" placeholder="Take a note..."></textarea>
+  <nav class="note--end" aria-label="App menu">
+    <button aria-pressed="false" aria-label="Bold" title="Bold">
+      <svg width="1em" height="1em" viewBox="0 0 1 1">
+        <use href="#bold" />
+      </svg>
+    </button>
+    <button aria-pressed="false" aria-label="Italic" title="Italic">
+      <svg width="1em" height="1em" viewBox="0 0 1 1">
+        <use href="#italic" />
+      </svg>
+    </button>
+    <button aria-pressed="false" aria-label="Underline" title="Underline">
+      <svg width="1em" height="1em" viewBox="0 0 1 1">
+        <use href="#underline" />
+      </svg>
+    </button>
+    <button
+      aria-pressed="false"
+      aria-label="Strikethrough"
+      title="Strikethrough"
+    >
+      <svg width="1em" height="1em" viewBox="0 0 1 1">
+        <use href="#strikethrough" />
+      </svg>
+    </button>
+    <button
+      aria-pressed="false"
+      aria-label="Toggle bullets"
+      title="Toggle Bullets"
+    >
+      <svg width="1em" height="1em" viewBox="0 0 1 1">
+        <use href="#list" />
+      </svg>
+    </button>
+    <button aria-label="Add image" title="Add Image">
+      <svg width="1em" height="1em" viewBox="0 0 1 1">
+        <use href="#image" />
+      </svg>
+    </button>
+  </nav>
 </main>
 
 <style>
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
-}
-
-.logo.svelte-kit:hover {
-  filter: drop-shadow(0 0 2em #ff3e00);
-}
-
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-
-  color: #0f0f0f;
-  background-color: #f6f6f6;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-}
-
-.container {
-  margin: 0;
-  padding-top: 10vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
-}
-
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
-}
-
-.row {
-  display: flex;
-  justify-content: center;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
-h1 {
-  text-align: center;
-}
-
-input,
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  color: #0f0f0f;
-  background-color: #ffffff;
-  transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-}
-
-button {
-  cursor: pointer;
-}
-
-button:hover {
-  border-color: #396cd8;
-}
-button:active {
-  border-color: #396cd8;
-  background-color: #e8e8e8;
-}
-
-input,
-button {
-  outline: none;
-}
-
-#greet-input {
-  margin-right: 5px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
+  :global(:is(html, body)) {
+    block-size: 100%;
   }
 
-  a:hover {
-    color: #24c8db;
+  .note {
+    block-size: 100%;
+    --button-size-1: 30px;
+    --button-size-2: 35px;
+    --border-radius: 10px;
+    --ui-padding: 8px;
+    --button-padding: 7px;
+
+    --color-text-1: #ededed;
+    --color-text-2: #c1c1c1;
+    --color-surface-1: #333333;
+    --color-surface-2: #454545;
+
+    color: var(--color-text-1);
+    background: var(--color-surface-1);
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+
+    > .note--mid {
+      flex-grow: 1;
+    }
   }
 
-  input,
+  .note--start {
+    --button-size: var(--button-size-2);
+    border-start-start-radius: var(--border-radius);
+    border-start-end-radius: var(--border-radius);
+    color: var(--color-text-2);
+    background: var(--color-surface-2);
+    display: flex;
+    align-items: center;
+
+    & *:first-child {
+      margin-inline-end: auto;
+      border-start-start-radius: inherit;
+    }
+    & *:last-child {
+      border-start-end-radius: inherit;
+    }
+  }
+
+  .note--end {
+    color: var(--color-text-2);
+    --button-size: var(--button-size-1);
+    padding: var(--ui-padding);
+    border-end-start-radius: var(--border-radius);
+    border-end-end-radius: var(--border-radius);
+    border-block-start: 1px solid var(--color-surface-2);
+  }
+
+  textarea {
+    font-size: 1.05em;
+    border: none;
+    color: inherit;
+    background: none;
+    resize: none;
+    padding: var(--ui-padding);
+    line-height: 1.5;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-surface-2) transparent;
+
+    &:focus {
+      outline: none;
+    }
+
+    &::placeholder {
+      color: var(--color-text-2);
+    }
+  }
+
   button {
-    color: #ffffff;
-    background-color: #0f0f0f98;
-  }
-  button:active {
-    background-color: #0f0f0f69;
-  }
-}
+    cursor: pointer;
+    --_button-size: var(--button-size, 26px);
+    width: var(--_button-size);
+    height: var(--_button-size);
+    padding: var(--button-padding, 6px);
+    border: none;
+    background: none;
+    color: inherit;
 
+    & > svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    &:hover {
+      background: oklch(from currentColor l c h / 0.1);
+    }
+
+    position: relative;
+    /* will work on pressed buttons */
+    /*
+    &[aria-pressed="true"]::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: oklch(from currentColor l c h / 0.1);
+    }
+     */
+  }
 </style>
