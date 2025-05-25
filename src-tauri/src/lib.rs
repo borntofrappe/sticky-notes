@@ -10,6 +10,20 @@ fn close_note(window: tauri::Window) {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::new().build())
+        .setup(|app| {
+            let _ = tauri::WebviewWindowBuilder::new(
+                app,
+                "main",
+                tauri::WebviewUrl::App("index.html".into()),
+            )
+            .title("note-window")
+            .inner_size(385.0, 400.0)
+            .transparent(true)
+            .decorations(false)
+            .build()?;
+
+            Ok(())
+        })
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![close_note])
         .run(tauri::generate_context!())
