@@ -1,4 +1,5 @@
 use tauri::{LogicalSize, Manager};
+use uuid::Uuid;
 
 #[tauri::command]
 fn close_note(window: tauri::Window) {
@@ -20,7 +21,7 @@ async fn new_note(window: tauri::Window) {
 
     let width: f64 = size.width.into();
     let height: f64 = size.height.into();
-    let new_label = "note-0".to_string();
+    let new_label = format!("note-{}", Uuid::new_v4());
 
     let _ = tauri::WebviewWindowBuilder::new(
         &window,
