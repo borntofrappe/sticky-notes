@@ -10,15 +10,6 @@
     "frontendDist": "../build"
   },
   "app": {
-    "windows": [
-      {
-        "title": "sticky-notes",
-        "width": 385,
-        "height": 400,
-        "decorations": false,
-        "transparent": true
-      }
-    ],
     "security": {
       "csp": null
     }
