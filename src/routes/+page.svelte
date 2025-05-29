@@ -33,7 +33,11 @@
       </svg>
     </button>
   </nav>
-  <textarea class="note--mid" placeholder="Take a note..."></textarea>
+  <div
+    contenteditable="true"
+    class="note--mid note--editor"
+    placeholder="Take a note..."
+  ></div>
   <nav class="note--end" aria-label="App menu">
     <button aria-pressed="false" aria-label="Bold" title="Bold">
       <svg width="1em" height="1em" viewBox="0 0 1 1">

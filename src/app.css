@@ -77,10 +77,6 @@ body {
 
 .note--editor {
   font-size: 1.05em;
-  border: none;
-  color: inherit;
-  background: none;
-  resize: none;
   padding: var(--ui-padding);
   line-height: 1.5;
 
@@ -88,7 +84,8 @@ body {
     outline: none;
   }
 
-  &::placeholder {
+  &:empty::before {
+    content: attr(placeholder);
     color: var(--color-text-2);
   }
 }
