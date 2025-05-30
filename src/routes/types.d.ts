@@ -1,0 +1,1 @@
+type Command = 'bold'| 'italic'| 'underline'| 'strikeThrough'| 'insertUnorderedList' | 'insertImage'
