@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use tauri::{LogicalSize, Manager};
+use tauri::{LogicalPosition, LogicalSize, Manager};
 use tauri_plugin_store::StoreExt;
 use uuid::Uuid;
 
@@ -21,29 +21,44 @@ struct View {
 async fn new_note(window: tauri::Window) {
     let label = window.label();
     let webview_window = window.get_webview_window(&label).unwrap();
+    let inner_position = webview_window.inner_position().unwrap();
     let inner_size = webview_window.inner_size().unwrap();
     let scale_factor = webview_window
         .current_monitor()
         .unwrap()
         .map(|m| m.scale_factor())
         .unwrap_or(1.);
+    let position: LogicalPosition<u32> = inner_position.to_logical(scale_factor);
     let size: LogicalSize<u32> = inner_size.to_logical(scale_factor);
 
+    let x: f64 = position.x.into();
+    let y: f64 = position.y.into();
     let width: f64 = size.width.into();
     let height: f64 = size.height.into();
     let new_label = format!("note-{}", Uuid::new_v4());
 
     let store = webview_window.store(STORE_PATH).unwrap();
-    store.set(label, json!({ "width": width, "height": height }));
-    store.set(&new_label, json!({ "width": width, "height": height }));
+    let value = store.get("views").expect("");
+    let mut views: Vec<View> = serde_json::from_value(value).unwrap();
+    views.push(View {
+        label: new_label.clone(),
+        x,
+        y,
+        width,
+        height,
+    });
+
+    store.set("views", json!(views));
 
     let _ = store.save();
+    store.close_resource();
 
     let _ = tauri::WebviewWindowBuilder::new(
         &window,
         new_label,
         tauri::WebviewUrl::App("index.html".into()),
     )
+    .position(x, y)
     .inner_size(width, height)
     .transparent(TRANSPARENT)
     .decorations(DECORATIONS)
@@ -104,7 +119,13 @@ pub fn run() {
             let views: Vec<View> = serde_json::from_value(value).unwrap();
 
             for view in views {
-                let View {label, x, y, width, height} = view;
+                let View {
+                    label,
+                    x,
+                    y,
+                    width,
+                    height,
+                } = view;
                 let _ = tauri::WebviewWindowBuilder::new(
                     app,
                     label,

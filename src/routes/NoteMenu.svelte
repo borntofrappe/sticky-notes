@@ -5,7 +5,7 @@
   };
 
   const newNote = async () => {
-    // invoke("new_note");
+    invoke("new_note");
   };
 </script>
 
