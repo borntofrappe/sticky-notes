@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/core";
   const closeNote = async () => {
-    // invoke("close_note");
+    invoke("close_note");
   };
 
   const newNote = async () => {

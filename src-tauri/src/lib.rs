@@ -30,7 +30,6 @@ async fn new_note(window: tauri::Window) {
         .unwrap_or(1.);
     let position: LogicalPosition<u32> = inner_position.to_logical(scale_factor);
     let size: LogicalSize<u32> = inner_size.to_logical(scale_factor);
-
     let x: f64 = position.x.into();
     let y: f64 = position.y.into();
     let width: f64 = size.width.into();
@@ -71,23 +70,44 @@ fn close_note(window: tauri::Window) {
     let label = window.label();
 
     let store = window.store(STORE_PATH).unwrap();
-    if store.entries().len() > 1 {
-        store.delete(&label); // temp solution to remove too many windows
+    let value = store.get("views").expect("");
+    let mut views: Vec<View> = serde_json::from_value(value).unwrap();
+
+    if views.len() > 1 {
+        if let Some(index) = views
+            .iter()
+            .position(|view| *view.label == label.to_string())
+        {
+            views.remove(index);
+        }
     } else {
         let webview_window = window.get_webview_window(&label).unwrap();
+        let inner_position = webview_window.inner_position().unwrap();
         let inner_size = webview_window.inner_size().unwrap();
         let scale_factor = webview_window
             .current_monitor()
             .unwrap()
             .map(|m| m.scale_factor())
             .unwrap_or(1.);
+        let position: LogicalPosition<u32> = inner_position.to_logical(scale_factor);
         let size: LogicalSize<u32> = inner_size.to_logical(scale_factor);
-
+        let x: f64 = position.x.into();
+        let y: f64 = position.y.into();
         let width: f64 = size.width.into();
         let height: f64 = size.height.into();
-        store.set(label, json!({ "width": width, "height": height }));
+
+        if let Some(index) = views
+            .iter()
+            .position(|view| *view.label == label.to_string())
+        {
+            views[index].x = x;
+            views[index].y = y;
+            views[index].width = width;
+            views[index].height = height;
+        }
     }
 
+    store.set("views", json!(views));
     let _ = store.save();
     store.close_resource();
 
@@ -100,7 +120,6 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .setup(|app| {
             let store = tauri_plugin_store::StoreBuilder::new(app, STORE_PATH).build()?;
-            store.clear();
 
             if !store.has("views") {
                 let view = View {
