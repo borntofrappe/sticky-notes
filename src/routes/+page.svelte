@@ -106,7 +106,8 @@
 <main class="note">
   <NoteMenu />
   <div
-    role="application"
+    tabindex="0"
+    role="textbox"
     {onpointerdown}
     {onpointerup}
     {onpointerleave}
