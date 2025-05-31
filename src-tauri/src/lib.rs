@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tauri::{LogicalSize, Manager};
 use tauri_plugin_store::StoreExt;
@@ -6,6 +7,15 @@ use uuid::Uuid;
 const STORE_PATH: &str = "store.bin";
 const TRANSPARENT: bool = true;
 const DECORATIONS: bool = false;
+
+#[derive(Serialize, Deserialize, Debug)]
+struct View {
+    label: String,
+    x: f64,
+    y: f64,
+    width: f64,
+    height: f64,
+}
 
 #[tauri::command]
 async fn new_note(window: tauri::Window) {
@@ -75,22 +85,32 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .setup(|app| {
             let store = tauri_plugin_store::StoreBuilder::new(app, STORE_PATH).build()?;
+            store.clear();
 
-            if store.entries().len() == 0 {
-                let label = "note-0";
-                store.set(label, json!({ "width": 385.0, "height": 400.0 }));
-                let _ = store.save();
+            if !store.has("views") {
+                let view = View {
+                    label: String::from("note-0"),
+                    x: 180.0,
+                    y: 180.0,
+                    width: 385.0,
+                    height: 400.0,
+                };
+                store.set("views", json!(vec![view]));
             }
 
-            for (label, value) in store.entries() {
-                let width = value["width"].as_f64().unwrap();
-                let height = value["height"].as_f64().unwrap();
+            let _ = store.save();
 
+            let value = store.get("views").expect("");
+            let views: Vec<View> = serde_json::from_value(value).unwrap();
+
+            for view in views {
+                let View {label, x, y, width, height} = view;
                 let _ = tauri::WebviewWindowBuilder::new(
                     app,
                     label,
                     tauri::WebviewUrl::App("index.html".into()),
                 )
+                .position(x, y)
                 .inner_size(width, height)
                 .transparent(TRANSPARENT)
                 .decorations(DECORATIONS)
