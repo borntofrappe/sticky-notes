@@ -1,3 +1,26 @@
+:root {
+  --color-text-highlight-yellow: #5c4a02;
+  --color-surface-highlight-yellow: #e6b904;
+
+  --color-text-highlight-green: #2c5427;
+  --color-surface-highlight-green: #6ed261;
+
+  --color-text-highlight-pink: #5e364e;
+  --color-surface-highlight-pink: #ea86c2;
+
+  --color-text-highlight-purple: #503966;
+  --color-surface-highlight-purple: #c78eff;
+
+  --color-text-highlight-blue: #244d5c;
+  --color-surface-highlight-blue: #59c0e7;
+
+  --color-text-highlight-grey: #444444;
+  --color-surface-highlight-grey: #aaaaaa;
+
+  --color-text-highlight-charcoal: #c6c6c6;
+  --color-surface-highlight-charcoal: #454545;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -24,18 +47,25 @@ body {
   block-size: 100%;
   --button-size-1: 30px;
   --button-size-2: 35px;
-  --border-radius: 10px;
-  --ui-padding: 8px;
-  --button-padding: 7px;
+  --border-radius-ui: 10px;
+  --border-radius-button: 10px;
+  --border-radius-hint: 2px;
+  --padding-ui: 8px;
+  --padding-button: 7px;
+  --padding-hint: 6px;
 
   --color-text-1: #ededed;
   --color-text-2: #c1c1c1;
   --color-surface-1: #333333;
   --color-surface-2: #454545;
+  --color-text-hint: #ffffff;
+  --color-surface-hint: #2b2b2b;
+  --color-text-highlight: var(--color-text-highlight-charcoal);
+  --color-surface-highlight: var(--color-surface-highlight-charcoal);
 
   color: var(--color-text-1);
   background: var(--color-surface-1);
-  border-radius: var(--border-radius);
+  border-radius: var(--border-radius-ui);
   display: flex;
   flex-direction: column;
 
@@ -50,10 +80,10 @@ body {
 
 .note--start {
   --button-size: var(--button-size-2);
-  border-start-start-radius: var(--border-radius);
-  border-start-end-radius: var(--border-radius);
-  color: var(--color-text-2);
-  background: var(--color-surface-2);
+  border-start-start-radius: var(--border-radius-ui);
+  border-start-end-radius: var(--border-radius-ui);
+  color: var(--color-text-highlight);
+  background: var(--color-surface-highlight);
   display: flex;
   align-items: center;
 
@@ -69,15 +99,15 @@ body {
 .note--end {
   color: var(--color-text-2);
   --button-size: var(--button-size-1);
-  padding: var(--ui-padding);
-  border-end-start-radius: var(--border-radius);
-  border-end-end-radius: var(--border-radius);
+  padding: var(--padding-ui);
+  border-end-start-radius: var(--border-radius-ui);
+  border-end-end-radius: var(--border-radius-ui);
   border-block-start: 1px solid var(--color-surface-2);
 }
 
 .note--editor {
   font-size: 1.05em;
-  padding: var(--ui-padding);
+  padding: var(--padding-ui);
   line-height: 1.5;
 
   &:focus {
@@ -95,7 +125,7 @@ button {
   --_button-size: var(--button-size, 26px);
   width: var(--_button-size);
   height: var(--_button-size);
-  padding: var(--button-padding, 6px);
+  padding: var(--padding-button, 6px);
   border: none;
   background: none;
   color: inherit;
@@ -117,5 +147,26 @@ button {
     position: absolute;
     inset: 0;
     background: oklch(from currentColor l c h / 0.1);
+  }
+
+  &[aria-label]::after {
+    inset-inline-start: 50%;
+    inset-block-end: 100%;
+    translate: -50% -1px;
+    content: attr(aria-label);
+    position: absolute;
+    font-size: 0.8em;
+    color: var(--color-text-hint);
+    background: var(--color-surface-hint);
+    inline-size: max-content;
+    padding: var(--padding-hint);
+    border-radius: var(--border-radius-hint);
+    opacity: 0;
+    transition: opacity 0.275s ease-in-out;
+  }
+
+  &:hover::after {
+    transition-delay: 1s;
+    opacity: 1;
   }
 }
