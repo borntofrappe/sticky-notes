@@ -10,17 +10,17 @@
 </script>
 
 <nav data-tauri-drag-region class="note--start" aria-label="Menu note">
-  <button onclick={newNote} aria-label="New note" title="New note">
+  <button onclick={newNote} aria-label="New note">
     <svg width="1em" height="1em" viewBox="0 0 1 1">
       <use href="#plus" />
     </svg>
   </button>
-  <button aria-pressed="false" aria-label="Menu" title="Menu">
+  <button aria-pressed="false" aria-label="Menu">
     <svg width="1em" height="1em" viewBox="0 0 1 1">
       <use href="#ellipsis" />
     </svg>
   </button>
-  <button onclick={closeNote} aria-label="Close note" title="Close note">
+  <button onclick={closeNote} aria-label="Close note">
     <svg width="1em" height="1em" viewBox="0 0 1 1">
       <use href="#x" />
     </svg>
