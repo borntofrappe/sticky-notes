@@ -23,7 +23,7 @@
 <nav class="note--end" aria-label="Menu editor">
   <button class="note-button" onclick={bold} aria-pressed={options.has("bold")} aria-label="Bold">
     <svg width="1em" height="1em" viewBox="0 0 1 1">
-      <use href="#bold" />
+      <use href="#icon-bold" />
     </svg>
   </button>
   <button class="note-button"
@@ -32,7 +32,7 @@
     aria-label="Italic"
   >
     <svg width="1em" height="1em" viewBox="0 0 1 1">
-      <use href="#italic" />
+      <use href="#icon-italic" />
     </svg>
   </button>
   <button class="note-button"
@@ -41,7 +41,7 @@
     aria-label="Underline"
   >
     <svg width="1em" height="1em" viewBox="0 0 1 1">
-      <use href="#underline" />
+      <use href="#icon-underline" />
     </svg>
   </button>
   <button class="note-button"
@@ -50,7 +50,7 @@
     aria-label="Strikethrough"
   >
     <svg width="1em" height="1em" viewBox="0 0 1 1">
-      <use href="#strikethrough" />
+      <use href="#icon-strikethrough" />
     </svg>
   </button>
   <button class="note-button"
@@ -59,12 +59,12 @@
     aria-label="Toggle bullets"
   >
     <svg width="1em" height="1em" viewBox="0 0 1 1">
-      <use href="#list" />
+      <use href="#icon-unordered-list" />
     </svg>
   </button>
   <button class="note-button" onclick={insertImage} aria-label="Add image">
     <svg width="1em" height="1em" viewBox="0 0 1 1">
-      <use href="#image" />
+      <use href="#icon-image" />
     </svg>
   </button>
 </nav>
