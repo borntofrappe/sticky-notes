@@ -18,7 +18,7 @@ struct View {
 }
 
 #[tauri::command]
-async fn new_note(window: tauri::Window) {
+async fn create_note(window: tauri::Window) {
     let label = window.label();
     let webview_window = window.get_webview_window(&label).unwrap();
     let inner_position = webview_window.inner_position().unwrap();
@@ -73,41 +73,59 @@ fn close_note(window: tauri::Window) {
     let value = store.get("views").expect("");
     let mut views: Vec<View> = serde_json::from_value(value).unwrap();
 
-    if views.len() > 1 {
-        if let Some(index) = views
-            .iter()
-            .position(|view| *view.label == label.to_string())
-        {
-            views.remove(index);
-        }
-    } else {
-        let webview_window = window.get_webview_window(&label).unwrap();
-        let inner_position = webview_window.inner_position().unwrap();
-        let inner_size = webview_window.inner_size().unwrap();
-        let scale_factor = webview_window
-            .current_monitor()
-            .unwrap()
-            .map(|m| m.scale_factor())
-            .unwrap_or(1.);
-        let position: LogicalPosition<u32> = inner_position.to_logical(scale_factor);
-        let size: LogicalSize<u32> = inner_size.to_logical(scale_factor);
-        let x: f64 = position.x.into();
-        let y: f64 = position.y.into();
-        let width: f64 = size.width.into();
-        let height: f64 = size.height.into();
+    let webview_window = window.get_webview_window(&label).unwrap();
+    let inner_position = webview_window.inner_position().unwrap();
+    let inner_size = webview_window.inner_size().unwrap();
+    let scale_factor = webview_window
+        .current_monitor()
+        .unwrap()
+        .map(|m| m.scale_factor())
+        .unwrap_or(1.);
+    let position: LogicalPosition<u32> = inner_position.to_logical(scale_factor);
+    let size: LogicalSize<u32> = inner_size.to_logical(scale_factor);
+    let x: f64 = position.x.into();
+    let y: f64 = position.y.into();
+    let width: f64 = size.width.into();
+    let height: f64 = size.height.into();
 
-        if let Some(index) = views
-            .iter()
-            .position(|view| *view.label == label.to_string())
-        {
-            views[index].x = x;
-            views[index].y = y;
-            views[index].width = width;
-            views[index].height = height;
-        }
+    if let Some(index) = views
+        .iter()
+        .position(|view| *view.label == label.to_string())
+    {
+        views[index].x = x;
+        views[index].y = y;
+        views[index].width = width;
+        views[index].height = height;
     }
 
     store.set("views", json!(views));
+    let _ = store.save();
+    store.close_resource();
+
+    let _ = window.get_webview_window(&label).unwrap().close();
+}
+
+#[tauri::command]
+fn delete_note(window: tauri::Window) {
+    let label = window.label();
+
+    let store = window.store(STORE_PATH).unwrap();
+    let value = store.get("views").expect("");
+    let mut views: Vec<View> = serde_json::from_value(value).unwrap();
+
+    if let Some(index) = views
+        .iter()
+        .position(|view| *view.label == label.to_string())
+    {
+        views.remove(index);
+    }
+
+    if views.len() == 0 {
+        let _ = store.delete("views");
+    } else {
+        store.set("views", json!(views));
+    }
+
     let _ = store.save();
     store.close_resource();
 
@@ -162,7 +180,11 @@ pub fn run() {
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![close_note, new_note])
+        .invoke_handler(tauri::generate_handler![
+            create_note,
+            close_note,
+            delete_note
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -1,12 +1,13 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/core";
   import NoteDialog from "./NoteDialog.svelte";
+
   const closeNote = async () => {
     invoke("close_note");
   };
 
   const newNote = async () => {
-    invoke("new_note");
+    invoke("create_note");
   };
 
   let dialog: HTMLDialogElement;
