@@ -1,22 +1,29 @@
 :root {
+  --color-highlight-yellow: #e2b704;
   --color-text-highlight-yellow: #5c4a02;
   --color-surface-highlight-yellow: #e6b904;
 
+  --color-highlight-green: #6ab759;
   --color-text-highlight-green: #2c5427;
   --color-surface-highlight-green: #6ed261;
 
+  --color-highlight-pink: #e589c3;
   --color-text-highlight-pink: #5e364e;
   --color-surface-highlight-pink: #ea86c2;
 
+  --color-highlight-purple: #ae81e0;
   --color-text-highlight-purple: #503966;
   --color-surface-highlight-purple: #c78eff;
 
+  --color-highlight-blue: #5fbfe6;
   --color-text-highlight-blue: #244d5c;
   --color-surface-highlight-blue: #59c0e7;
 
+  --color-highlight-grey: #999999;
   --color-text-highlight-grey: #444444;
   --color-surface-highlight-grey: #aaaaaa;
 
+  --color-highlight-charcoal: #434343;
   --color-text-highlight-charcoal: #c6c6c6;
   --color-surface-highlight-charcoal: #454545;
 }
@@ -120,7 +127,7 @@ body {
   }
 }
 
-button {
+.note-button {
   cursor: pointer;
   --_button-size: var(--button-size, 26px);
   width: var(--_button-size);
@@ -168,5 +175,140 @@ button {
   &:hover::after {
     transition-delay: 1s;
     opacity: 1;
+  }
+}
+
+.note--dialog {
+  border: none;
+  position: absolute;
+  inset-block-start: 0%;
+  inset-inline-start: unset;
+  inset-inline-end: 0%;
+  inline-size: 100%;
+  max-inline-size: unset;
+  color: var(--color-text-1);
+  background: var(--color-surface-1);
+  border-start-start-radius: var(--border-radius-ui);
+  border-start-end-radius: var(--border-radius-ui);
+  transition: translate 0.25s, display 0.25s allow-discrete;
+
+  &[open] {
+    @starting-style {
+      translate: 0% -100%;
+    }
+  }
+
+  &:not([open]) {
+    translate: 0% -100%;
+  }
+
+  .note--dialog--colors {
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
+
+    & > *:first-child {
+      border-start-start-radius: inherit;
+    }
+
+    & > *:last-child {
+      border-start-end-radius: inherit;
+    }
+  }
+}
+
+@media (min-width: 350px) {
+  .note--dialog {
+    border-start-start-radius: 0;
+    inline-size: 320px;
+  }
+}
+
+.note--dialog--colors {
+  display: flex;
+  block-size: 50px;
+
+  & > * {
+    flex-grow: 1;
+  }
+}
+
+.note--dialog--colors button {
+  border: none;
+  color: var(--color-surface-1);
+
+  &[data-higlight="yellow"] {
+    background: var(--color-highlight-yellow);
+  }
+
+  &[data-higlight="green"] {
+    background: var(--color-highlight-green);
+  }
+
+  &[data-higlight="pink"] {
+    background: var(--color-highlight-pink);
+  }
+
+  &[data-higlight="purple"] {
+    background: var(--color-highlight-purple);
+  }
+
+  &[data-higlight="blue"] {
+    background: var(--color-highlight-blue);
+  }
+
+  &[data-higlight="grey"] {
+    background: var(--color-highlight-grey);
+  }
+
+  &[data-higlight="charcoal"] {
+    color: var(--color-text-1);
+    background: var(--color-surface-highlight-charcoal);
+  }
+
+  position: relative;
+
+  &:hover::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: oklch(from currentColor l c h / 0.08);
+  }
+
+  &:active::before {
+    background: oklch(from currentColor l c h / 0.12);
+  }
+
+  &[data-active="true"]::after {
+    content: "";
+    position: absolute;
+    width: 1em;
+    height: 1em;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    background: currentColor;
+    mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>');
+  }
+}
+
+.note--dialog--actions button {
+  padding: calc(var(--padding-ui) * 1.5) calc(var(--padding-ui) * 2);
+  color: inherit;
+  background: none;
+  display: flex;
+  inline-size: 100%;
+  border: none;
+  gap: 1ch;
+  align-items: center;
+
+  &:hover {
+    background: oklch(from currentColor l c h / 0.1);
+  }
+
+  & > svg {
+    width: 1.1em;
+    height: 1.1em;
+    display: block;
   }
 }
