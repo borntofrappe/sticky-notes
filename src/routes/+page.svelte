@@ -1,14 +1,16 @@
 <script lang="ts">
+  import "../app.css";
   import Database from "@tauri-apps/plugin-sql";
   import { getCurrentWebview } from "@tauri-apps/api/webview";
-  import "../app.css";
   import { SvelteSet } from "svelte/reactivity";
+  import { onMount } from "svelte";
+
   import { closeNote, deleteNote, newNote } from "./tauri-commands";
+  import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "./constants";
 
   import Icons from "./Icons.svelte";
   import NoteMenu from "./NoteMenu.svelte";
   import EditorMenu from "./EditorMenu.svelte";
-  import { onMount } from "svelte";
 
   let text = $state("");
   let options = $state.raw<Set<Command>>(new SvelteSet());
@@ -17,7 +19,7 @@
 
   onMount(async () => {
     const { label } = getCurrentWebview();
-    const db = await Database.load("sqlite:notes.db");
+    const db = await Database.load(DB_PATH);
     const result = (await db.select("SELECT * FROM notes WHERE label = $1", [
       label,
     ])) as [Note] | [];
@@ -29,7 +31,10 @@
         highlight: "yellow",
         text,
       };
-      document.documentElement.setAttribute("data-highlight", note.highlight);
+      document.documentElement.setAttribute(
+        HIGHLIGHT_QUALIFIED_NAME,
+        note.highlight
+      );
 
       await db.execute(
         "INSERT into notes (label, lastModified, highlight, text) VALUES ($1, $2, $3, $4)",
@@ -37,7 +42,10 @@
       );
     } else {
       const [note] = result;
-      document.documentElement.setAttribute("data-highlight", note.highlight);
+      document.documentElement.setAttribute(
+        HIGHLIGHT_QUALIFIED_NAME,
+        note.highlight
+      );
       text = note.text;
     }
   });

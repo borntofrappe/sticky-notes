@@ -5,6 +5,8 @@ use tauri_plugin_sql::{Migration, MigrationKind};
 use tauri_plugin_store::StoreExt;
 
 const STORE_PATH: &str = "store.bin";
+const DB_PATH: &str = "sqlite:notes.db";
+const STORE_KEY: &str = "views";
 const TRANSPARENT: bool = true;
 const DECORATIONS: bool = false;
 
@@ -35,7 +37,7 @@ async fn create_note(window: tauri::Window, label: String) {
     let height: f64 = size.height.into();
 
     let store = webview_window.store(STORE_PATH).unwrap();
-    let value = store.get("views").expect("");
+    let value = store.get(STORE_KEY).expect("");
     let mut views: Vec<View> = serde_json::from_value(value).unwrap();
     views.push(View {
         label: label.clone(),
@@ -45,7 +47,7 @@ async fn create_note(window: tauri::Window, label: String) {
         height,
     });
 
-    store.set("views", json!(views));
+    store.set(STORE_KEY, json!(views));
 
     let _ = store.save();
     store.close_resource();
@@ -68,7 +70,7 @@ fn close_note(window: tauri::Window) {
     let label = window.label();
 
     let store = window.store(STORE_PATH).unwrap();
-    let value = store.get("views").expect("");
+    let value = store.get(STORE_KEY).expect("");
     let mut views: Vec<View> = serde_json::from_value(value).unwrap();
 
     let webview_window = window.get_webview_window(&label).unwrap();
@@ -96,7 +98,7 @@ fn close_note(window: tauri::Window) {
         views[index].height = height;
     }
 
-    store.set("views", json!(views));
+    store.set(STORE_KEY, json!(views));
     let _ = store.save();
     store.close_resource();
 
@@ -108,7 +110,7 @@ fn delete_note(window: tauri::Window) {
     let label = window.label();
 
     let store = window.store(STORE_PATH).unwrap();
-    let value = store.get("views").expect("");
+    let value = store.get(STORE_KEY).expect("");
     let mut views: Vec<View> = serde_json::from_value(value).unwrap();
 
     if let Some(index) = views
@@ -119,9 +121,9 @@ fn delete_note(window: tauri::Window) {
     }
 
     if views.len() == 0 {
-        let _ = store.delete("views");
+        let _ = store.delete(STORE_KEY);
     } else {
-        store.set("views", json!(views));
+        store.set(STORE_KEY, json!(views));
     }
 
     let _ = store.save();
@@ -146,20 +148,20 @@ pub fn run() {
         .setup(|app| {
             let store = tauri_plugin_store::StoreBuilder::new(app, STORE_PATH).build()?;
 
-            if !store.has("views") {
+            if !store.has(STORE_KEY) {
                 let view = View {
-                    label: String::from("note-0"),
+                    label: String::from("main"),
                     x: 180.0,
                     y: 180.0,
                     width: 385.0,
                     height: 400.0,
                 };
-                store.set("views", json!(vec![view]));
+                store.set(STORE_KEY, json!(vec![view]));
             }
 
             let _ = store.save();
 
-            let value = store.get("views").expect("");
+            let value = store.get(STORE_KEY).expect("");
             let views: Vec<View> = serde_json::from_value(value).unwrap();
 
             for view in views {
@@ -188,7 +190,7 @@ pub fn run() {
         })
         .plugin(
             tauri_plugin_sql::Builder::new()
-                .add_migrations("sqlite:notes.db", migrations)
+                .add_migrations(DB_PATH, migrations)
                 .build(),
         )
         .plugin(tauri_plugin_opener::init())
