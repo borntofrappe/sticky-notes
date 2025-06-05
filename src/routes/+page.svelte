@@ -1,5 +1,6 @@
 <script lang="ts">
   import "../app.css";
+  import { invoke } from "@tauri-apps/api/core";
   import { SvelteSet } from "svelte/reactivity";
 
   import Icons from "./Icons.svelte";
@@ -62,6 +63,35 @@
     pointerdown = false;
   };
 
+  const closeNote = async () => {
+    invoke("close_note");
+  };
+
+  const newNote = async () => {
+    invoke("create_note");
+  };
+
+  const deleteNote = async () => {
+    invoke("delete_note");
+  };
+
+  const onshortcut = async (event: KeyboardEvent) => {
+    const { key, ctrlKey } = event;
+    if (ctrlKey) {
+      switch (key.toLowerCase()) {
+        case "n":
+          newNote()
+          break;
+        case "w":
+          closeNote()
+          break;
+        case "d":
+          deleteNote()
+          break;
+      }
+    }
+  };
+
   const onkeydown = async (event: KeyboardEvent) => {
     const { key, ctrlKey, shiftKey } = event;
 
@@ -70,9 +100,11 @@
       (ctrlKey && key.toLowerCase() === "a")
     ) {
       updateOptions();
+      event.stopPropagation();
     } else {
       if (ctrlKey && shiftKey && key.toLowerCase() === "l") {
         event.preventDefault();
+        event.stopPropagation();
         toggleOption("insertUnorderedList");
       } else if (ctrlKey) {
         let command: Command | undefined;
@@ -94,12 +126,16 @@
 
         if (command) {
           event.preventDefault();
+          event.stopPropagation();
+
           toggleOption(command);
         }
       }
     }
   };
 </script>
+
+<svelte:window onkeydown={onshortcut} />
 
 <Icons />
 
