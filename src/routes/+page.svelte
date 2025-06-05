@@ -1,7 +1,7 @@
 <script lang="ts">
   import "../app.css";
-  import { invoke } from "@tauri-apps/api/core";
   import { SvelteSet } from "svelte/reactivity";
+  import { closeNote, deleteNote, newNote } from "./tauri-commands";
 
   import Icons from "./Icons.svelte";
   import NoteMenu from "./NoteMenu.svelte";
@@ -63,30 +63,18 @@
     pointerdown = false;
   };
 
-  const closeNote = async () => {
-    invoke("close_note");
-  };
-
-  const newNote = async () => {
-    invoke("create_note");
-  };
-
-  const deleteNote = async () => {
-    invoke("delete_note");
-  };
-
   const onshortcut = async (event: KeyboardEvent) => {
     const { key, ctrlKey } = event;
     if (ctrlKey) {
       switch (key.toLowerCase()) {
         case "n":
-          newNote()
+          newNote();
           break;
         case "w":
-          closeNote()
+          closeNote();
           break;
         case "d":
-          deleteNote()
+          deleteNote();
           break;
       }
     }

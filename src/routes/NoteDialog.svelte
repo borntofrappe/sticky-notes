@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { invoke } from "@tauri-apps/api/core";
   import { onMount } from "svelte";
+  import { deleteNote } from "./tauri-commands";
 
   type Props = {
     dialog: HTMLDialogElement;
@@ -34,11 +34,6 @@
 
   const listNotes = () => {
     // TODO: ACTUALLY DO THE THING
-    dialog.close();
-  };
-
-  const deleteNote = async () => {
-    invoke("delete_note");
     dialog.close();
   };
 
