@@ -179,6 +179,7 @@ pub fn run() {
 
             Ok(())
         })
+        .plugin(tauri_plugin_sql::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             create_note,
