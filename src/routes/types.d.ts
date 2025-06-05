@@ -14,3 +14,10 @@ type Color =
   | "blue"
   | "grey"
   | "charcoal";
+
+type Note = {
+  label: string,
+  lastModified: string;
+  highlight: Color,
+  text: string
+};

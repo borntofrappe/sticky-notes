@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Database from "@tauri-apps/plugin-sql";
+  import { getCurrentWebview } from "@tauri-apps/api/webview";
   import { onMount } from "svelte";
   import { deleteNote } from "./tauri-commands";
 
@@ -17,31 +19,29 @@
   ];
 
   let option = $state<Color>("charcoal");
-  let timeoutID: number;
   const timeout = 500;
 
   let { dialog = $bindable() }: Props = $props();
 
-  const updateColor = (color: Color) => {
+  const updateColor = async (color: Color) => {
     option = color;
     document.documentElement.setAttribute("data-highlight", color);
 
-    timeoutID = setTimeout(() => {
-      clearTimeout(timeoutID);
-      dialog.close();
-    }, timeout);
+    const { label } = await getCurrentWebview();
+    const db = await Database.load("sqlite:notes.db");
+    await db.execute("UPDATE notes SET highlight = $1 WHERE label = $2", [
+      color,
+      label,
+    ]);
+
+    await new Promise((resolve) => setTimeout(resolve, timeout));
+    dialog.close();
   };
 
   const listNotes = () => {
     // TODO: ACTUALLY DO THE THING
     dialog.close();
   };
-
-  onMount(() => {
-    return () => {
-      clearTimeout(timeoutID);
-    };
-  });
 </script>
 
 <dialog class="note--dialog" bind:this={dialog}>

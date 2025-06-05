@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Database from "@tauri-apps/plugin-sql";
+  import { getCurrentWebview } from "@tauri-apps/api/webview";
   import "../app.css";
   import { SvelteSet } from "svelte/reactivity";
   import { closeNote, deleteNote, newNote } from "./tauri-commands";
@@ -6,11 +8,39 @@
   import Icons from "./Icons.svelte";
   import NoteMenu from "./NoteMenu.svelte";
   import EditorMenu from "./EditorMenu.svelte";
+  import { onMount } from "svelte";
 
   let text = $state("");
   let options = $state.raw<Set<Command>>(new SvelteSet());
   let editor: HTMLDivElement;
   let pointerdown: boolean = false;
+
+  onMount(async () => {
+    const { label } = getCurrentWebview();
+    const db = await Database.load("sqlite:notes.db");
+    const result = (await db.select("SELECT * FROM notes WHERE label = $1", [
+      label,
+    ])) as [Note] | [];
+
+    if (result.length === 0) {
+      const note: Note = {
+        label,
+        lastModified: new Date().toString(),
+        highlight: "yellow",
+        text,
+      };
+      document.documentElement.setAttribute("data-highlight", note.highlight);
+
+      await db.execute(
+        "INSERT into notes (label, lastModified, highlight, text) VALUES ($1, $2, $3, $4)",
+        [note.label, note.lastModified, note.highlight, note.text]
+      );
+    } else {
+      const [note] = result;
+      document.documentElement.setAttribute("data-highlight", note.highlight);
+      text = note.text;
+    }
+  });
 
   const toggleOption = (option: Command) => {
     document.execCommand(option, false, undefined);
