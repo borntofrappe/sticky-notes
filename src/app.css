@@ -52,13 +52,13 @@ body {
 
 .note {
   block-size: 100%;
-  --button-size-1: 30px;
-  --button-size-2: 35px;
+  --button-size-1: 28px;
+  --button-size-2: 32px;
   --border-radius-ui: 10px;
   --border-radius-button: 10px;
   --border-radius-hint: 2px;
   --padding-ui: 8px;
-  --padding-button: 7px;
+  --padding-button: 6px;
   --padding-hint: 6px;
 
   --color-text-1: #ededed;
@@ -69,6 +69,7 @@ body {
   --color-surface-hint: #2b2b2b;
   --color-text-highlight: var(--color-text-highlight-yellow);
   --color-surface-highlight: var(--color-surface-highlight-yellow);
+  font-size: 0.9rem;
 
   color: var(--color-text-1);
   background: var(--color-surface-1);
