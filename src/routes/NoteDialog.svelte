@@ -1,6 +1,7 @@
 <script lang="ts">
   import Database from "@tauri-apps/plugin-sql";
   import { getCurrentWebview } from "@tauri-apps/api/webview";
+  import { onMount } from "svelte";
   import { deleteNote } from "./tauri-commands";
   import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "./constants";
 
@@ -22,6 +23,18 @@
   const timeout = 500;
 
   let { dialog = $bindable() }: Props = $props();
+
+  onMount(async () => {
+    const { label } = getCurrentWebview();
+    const db = await Database.load(DB_PATH);
+    const result = (await db.select("SELECT * FROM notes WHERE label = $1", [
+      label,
+    ])) as [Note] | [];
+
+    if (result.length !== 0) {
+      option = result[0].highlight;
+    }
+  });
 
   const updateColor = async (color: Color) => {
     option = color;
