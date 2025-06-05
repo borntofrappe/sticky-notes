@@ -3852,7 +3852,6 @@ dependencies = [
  "tauri-plugin-opener",
  "tauri-plugin-sql",
  "tauri-plugin-store",
- "uuid",
 ]
 
 [[package]]

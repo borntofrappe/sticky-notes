@@ -3,7 +3,6 @@ use serde_json::json;
 use tauri::{LogicalPosition, LogicalSize, Manager};
 use tauri_plugin_sql::{Migration, MigrationKind};
 use tauri_plugin_store::StoreExt;
-use uuid::Uuid;
 
 const STORE_PATH: &str = "store.bin";
 const TRANSPARENT: bool = true;
@@ -19,9 +18,8 @@ struct View {
 }
 
 #[tauri::command]
-async fn create_note(window: tauri::Window) {
-    let label = window.label();
-    let webview_window = window.get_webview_window(&label).unwrap();
+async fn create_note(window: tauri::Window, label: String) {
+    let webview_window = window.get_webview_window(window.label()).unwrap();
     let inner_position = webview_window.inner_position().unwrap();
     let inner_size = webview_window.inner_size().unwrap();
     let scale_factor = webview_window
@@ -35,13 +33,12 @@ async fn create_note(window: tauri::Window) {
     let y: f64 = position.y.into();
     let width: f64 = size.width.into();
     let height: f64 = size.height.into();
-    let new_label = format!("note-{}", Uuid::new_v4());
 
     let store = webview_window.store(STORE_PATH).unwrap();
     let value = store.get("views").expect("");
     let mut views: Vec<View> = serde_json::from_value(value).unwrap();
     views.push(View {
-        label: new_label.clone(),
+        label: label.clone(),
         x,
         y,
         width,
@@ -55,7 +52,7 @@ async fn create_note(window: tauri::Window) {
 
     let _ = tauri::WebviewWindowBuilder::new(
         &window,
-        new_label,
+        label,
         tauri::WebviewUrl::App("index.html".into()),
     )
     .position(x, y)
