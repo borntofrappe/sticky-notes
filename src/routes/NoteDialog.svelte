@@ -23,8 +23,8 @@
   let { dialog = $bindable() }: Props = $props();
 
   const updateColor = (color: Color) => {
-    // TODO: ACTUALLY DO THE THING
     option = color;
+    document.documentElement.setAttribute("data-highlight", color);
 
     timeoutID = setTimeout(() => {
       clearTimeout(timeoutID);
@@ -52,8 +52,8 @@
           updateColor(color);
         }}
         aria-label={color}
-        data-higlight={color}
         data-active={color === option}
+        data-color={color}
       >
       </button>
     {/each}
