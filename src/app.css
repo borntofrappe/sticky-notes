@@ -193,9 +193,6 @@ body {
   }
 
   &[aria-label]::after {
-    inset-inline-start: 50%;
-    inset-block-end: 100%;
-    translate: -50% -1px;
     content: attr(aria-label);
     position: absolute;
     font-size: 0.8em;
@@ -206,6 +203,42 @@ body {
     border-radius: var(--border-radius-hint);
     opacity: 0;
     transition: opacity 0.275s ease-in-out;
+  }
+
+  &:not([data-anchor])::after,
+  &[data-anchor="top"]::after {
+    inset-inline-start: 50%;
+    inset-block-end: 100%;
+    translate: -50% -1px;
+  }
+
+  &[data-anchor="top left"]::after {
+    inset-inline-start: 0%;
+    inset-block-end: 100%;
+    translate: 0 -1px;
+  }
+
+  &[data-anchor="top right"]::after {
+    inset-inline-end: 0%;
+    inset-block-end: 100%;
+    translate: 0px 1px;
+  }
+
+  &[data-anchor="bottom"]::after {
+    inset-inline-start: 50%;
+    inset-block-start: 100%;
+    translate: -50% 1px;
+  }
+
+  &[data-anchor="bottom left"]::after {
+    inset-inline-start: 0%;
+    inset-block-start: 100%;
+    translate: 0px 1px;
+  }
+
+  &[data-anchor="bottom right"]::after {
+    inset-inline-end: 0%;
+    inset-block-start: 100%;
   }
 
   &:hover::after {
