@@ -201,6 +201,7 @@
     contenteditable="true"
     class="note--mid note--editor"
     placeholder="Take a note..."
+    spellcheck="false"
   ></div>
   <EditorMenu
     {options}
