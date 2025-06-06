@@ -1,13 +1,14 @@
 <script lang="ts">
   import Database from "@tauri-apps/plugin-sql";
-  import { getCurrentWebview } from "@tauri-apps/api/webview";
-  import { onMount } from "svelte";
+  import { getContext, onMount } from "svelte";
   import { deleteNote } from "./tauri-commands";
   import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "./constants";
 
   type Props = {
     dialog: HTMLDialogElement;
   };
+
+  const label = getContext("label") as string;
 
   const colors: Color[] = [
     "yellow",
@@ -25,7 +26,6 @@
   let { dialog = $bindable() }: Props = $props();
 
   onMount(async () => {
-    const { label } = getCurrentWebview();
     const db = await Database.load(DB_PATH);
     const result = (await db.select("SELECT * FROM notes WHERE label = $1", [
       label,
@@ -40,7 +40,6 @@
     option = color;
     document.documentElement.setAttribute(HIGHLIGHT_QUALIFIED_NAME, color);
 
-    const { label } = await getCurrentWebview();
     const db = await Database.load(DB_PATH);
     await db.execute("UPDATE notes SET highlight = $1 WHERE label = $2", [
       color,
@@ -78,7 +77,11 @@
       </svg>
       Notes list
     </button>
-    <button onclick={deleteNote}>
+    <button
+      onclick={() => {
+        deleteNote(label);
+      }}
+    >
       <svg width="1em" height="1em" viewBox="0 0 1 1">
         <use href="#icon-delete" />
       </svg>

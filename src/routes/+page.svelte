@@ -3,7 +3,7 @@
   import Database from "@tauri-apps/plugin-sql";
   import { getCurrentWebview } from "@tauri-apps/api/webview";
   import { SvelteSet } from "svelte/reactivity";
-  import { onMount } from "svelte";
+  import { setContext, onMount } from "svelte";
 
   import { closeNote, deleteNote, newNote } from "./tauri-commands";
   import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "./constants";
@@ -12,6 +12,8 @@
   import NoteMenu from "./NoteMenu.svelte";
   import EditorMenu from "./EditorMenu.svelte";
 
+  const { label } = getCurrentWebview();
+  setContext("label", label);
   let options = $state.raw<Set<Command>>(new SvelteSet());
   let editor: HTMLDivElement;
   let pointerdown: boolean = false;
@@ -19,7 +21,6 @@
   let timeoutID: number;
 
   onMount(async () => {
-    const { label } = getCurrentWebview();
     const db = await Database.load(DB_PATH);
     const result = (await db.select("SELECT * FROM notes WHERE label = $1", [
       label,
@@ -54,7 +55,6 @@
   const saveNote = async () => {
     const { innerHTML: text } = editor;
     const lastModified = new Date().toString();
-    const { label } = getCurrentWebview();
 
     const db = await Database.load(DB_PATH);
     await db.execute(
@@ -133,7 +133,7 @@
           closeNote();
           break;
         case "d":
-          deleteNote();
+          deleteNote(label);
           break;
       }
     }

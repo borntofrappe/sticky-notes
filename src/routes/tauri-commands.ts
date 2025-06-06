@@ -1,6 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
 import Database from "@tauri-apps/plugin-sql";
-import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "./constants";
 
 export const closeNote = async () => {
@@ -8,8 +7,9 @@ export const closeNote = async () => {
 };
 
 export const newNote = async () => {
-  const documentHighlight =
-    document.documentElement.getAttribute(HIGHLIGHT_QUALIFIED_NAME);
+  const documentHighlight = document.documentElement.getAttribute(
+    HIGHLIGHT_QUALIFIED_NAME
+  );
 
   const note: Note = {
     label: `note-${crypto.randomUUID()}`,
@@ -29,8 +29,7 @@ export const newNote = async () => {
   });
 };
 
-export const deleteNote = async () => {
-  const { label } = getCurrentWebview();
+export const deleteNote = async (label: string) => {
   const db = await Database.load(DB_PATH);
 
   await db.execute("DELETE FROM notes WHERE label = $1", [label]);
