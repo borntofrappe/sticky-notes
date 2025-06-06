@@ -3,17 +3,18 @@
   import Database from "@tauri-apps/plugin-sql";
   import { getCurrentWebview } from "@tauri-apps/api/webview";
   import { SvelteSet } from "svelte/reactivity";
-  import { setContext, onMount } from "svelte";
+  import { onMount } from "svelte";
 
   import { closeNote, deleteNote, newNote } from "./tauri-commands";
   import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "./constants";
+  import { setLabelContext } from "./context";
 
   import Icons from "./Icons.svelte";
   import NoteMenu from "./NoteMenu.svelte";
   import EditorMenu from "./EditorMenu.svelte";
 
   const { label } = getCurrentWebview();
-  setContext("label", label);
+  setLabelContext(label);
   let options = $state.raw<Set<Command>>(new SvelteSet());
   let editor: HTMLDivElement;
   let pointerdown: boolean = false;
