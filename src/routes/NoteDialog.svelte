@@ -1,6 +1,9 @@
 <script lang="ts">
+  import Database from "@tauri-apps/plugin-sql";
+  import { getCurrentWebview } from "@tauri-apps/api/webview";
   import { onMount } from "svelte";
   import { deleteNote } from "./tauri-commands";
+  import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "./constants";
 
   type Props = {
     dialog: HTMLDialogElement;
@@ -16,32 +19,42 @@
     "charcoal",
   ];
 
-  let option = $state<Color>("charcoal");
-  let timeoutID: number;
+  let option = $state<Color>("yellow");
   const timeout = 500;
 
   let { dialog = $bindable() }: Props = $props();
 
-  const updateColor = (color: Color) => {
-    option = color;
-    document.documentElement.setAttribute("data-highlight", color);
+  onMount(async () => {
+    const { label } = getCurrentWebview();
+    const db = await Database.load(DB_PATH);
+    const result = (await db.select("SELECT * FROM notes WHERE label = $1", [
+      label,
+    ])) as [Note] | [];
 
-    timeoutID = setTimeout(() => {
-      clearTimeout(timeoutID);
-      dialog.close();
-    }, timeout);
+    if (result.length !== 0) {
+      option = result[0].highlight;
+    }
+  });
+
+  const updateColor = async (color: Color) => {
+    option = color;
+    document.documentElement.setAttribute(HIGHLIGHT_QUALIFIED_NAME, color);
+
+    const { label } = await getCurrentWebview();
+    const db = await Database.load(DB_PATH);
+    await db.execute("UPDATE notes SET highlight = $1 WHERE label = $2", [
+      color,
+      label,
+    ]);
+
+    await new Promise((resolve) => setTimeout(resolve, timeout));
+    dialog.close();
   };
 
   const listNotes = () => {
     // TODO: ACTUALLY DO THE THING
     dialog.close();
   };
-
-  onMount(() => {
-    return () => {
-      clearTimeout(timeoutID);
-    };
-  });
 </script>
 
 <dialog class="note--dialog" bind:this={dialog}>

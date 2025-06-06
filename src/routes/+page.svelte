@@ -1,16 +1,75 @@
 <script lang="ts">
   import "../app.css";
+  import Database from "@tauri-apps/plugin-sql";
+  import { getCurrentWebview } from "@tauri-apps/api/webview";
   import { SvelteSet } from "svelte/reactivity";
+  import { onMount } from "svelte";
+
   import { closeNote, deleteNote, newNote } from "./tauri-commands";
+  import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "./constants";
 
   import Icons from "./Icons.svelte";
   import NoteMenu from "./NoteMenu.svelte";
   import EditorMenu from "./EditorMenu.svelte";
 
-  let text = $state("");
   let options = $state.raw<Set<Command>>(new SvelteSet());
   let editor: HTMLDivElement;
   let pointerdown: boolean = false;
+  const timeoutDelay = 200;
+  let timeoutID: number;
+
+  onMount(async () => {
+    const { label } = getCurrentWebview();
+    const db = await Database.load(DB_PATH);
+    const result = (await db.select("SELECT * FROM notes WHERE label = $1", [
+      label,
+    ])) as [Note] | [];
+
+    if (result.length === 0) {
+      const note: Note = {
+        label,
+        lastModified: new Date().toString(),
+        highlight: "yellow",
+        text: "",
+      };
+      document.documentElement.setAttribute(
+        HIGHLIGHT_QUALIFIED_NAME,
+        note.highlight
+      );
+
+      await db.execute(
+        "INSERT into notes (label, lastModified, highlight, text) VALUES ($1, $2, $3, $4)",
+        [note.label, note.lastModified, note.highlight, note.text]
+      );
+    } else {
+      const [note] = result;
+      document.documentElement.setAttribute(
+        HIGHLIGHT_QUALIFIED_NAME,
+        note.highlight
+      );
+      editor.innerHTML = note.text;
+    }
+  });
+
+  const saveNote = async () => {
+    const { innerHTML: text } = editor;
+    const lastModified = new Date().toString();
+    const { label } = getCurrentWebview();
+
+    const db = await Database.load(DB_PATH);
+    await db.execute(
+      "UPDATE notes SET text = $1, lastModified = $2 WHERE label = $3",
+      [text, lastModified, label]
+    );
+  };
+
+  const oninput = () => {
+    clearTimeout(timeoutID);
+
+    timeoutID = setTimeout(() => {
+      saveNote();
+    }, timeoutDelay);
+  };
 
   const toggleOption = (option: Command) => {
     document.execCommand(option, false, undefined);
@@ -132,13 +191,13 @@
   <div
     tabindex="0"
     role="textbox"
+    {oninput}
     {onpointerdown}
     {onpointerup}
     {onpointerleave}
     {onpointermove}
     {onkeydown}
     bind:this={editor}
-    bind:innerHTML={text}
     contenteditable="true"
     class="note--mid note--editor"
     placeholder="Take a note..."
