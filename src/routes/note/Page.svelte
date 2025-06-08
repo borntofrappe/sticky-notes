@@ -1,6 +1,8 @@
 <script lang="ts">
+  import "./page.css";
+
   import Database from "@tauri-apps/plugin-sql";
-  
+
   import { onMount } from "svelte";
   import { SvelteSet } from "svelte/reactivity";
 
