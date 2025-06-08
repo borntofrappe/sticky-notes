@@ -1,7 +1,7 @@
 <script lang="ts">
   import { closeNote, newNote } from "$lib/tauri-commands";
   
-  import NoteDialog from "./NoteDialog.svelte";
+  import NoteDialog from "./Dialog.svelte";
 
   let dialog: HTMLDialogElement;
   const openMenu = () => {
