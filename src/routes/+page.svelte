@@ -1,13 +1,15 @@
 <script lang="ts">
   import "../app.css";
+
   import Database from "@tauri-apps/plugin-sql";
   import { getCurrentWebview } from "@tauri-apps/api/webview";
+  
   import { SvelteSet } from "svelte/reactivity";
   import { onMount } from "svelte";
 
-  import { closeNote, deleteNote, newNote } from "./tauri-commands";
-  import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "./constants";
-  import { setLabelContext } from "./context";
+  import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "$lib/constants";
+  import { setLabelContext } from "$lib/context";
+  import { closeNote, deleteNote, newNote } from "$lib/tauri-commands";
 
   import Icons from "./Icons.svelte";
   import NoteMenu from "./NoteMenu.svelte";

@@ -1,9 +1,11 @@
 <script lang="ts">
   import Database from "@tauri-apps/plugin-sql";
+
   import { onMount } from "svelte";
-  import { deleteNote } from "./tauri-commands";
-  import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "./constants";
-  import { getLabelContext } from "./context";
+
+  import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "$lib/constants";
+  import { getLabelContext } from "$lib/context";
+  import { deleteNote } from "$lib/tauri-commands";
 
   type Props = {
     dialog: HTMLDialogElement;
