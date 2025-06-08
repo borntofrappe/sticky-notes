@@ -8,6 +8,7 @@
 
   import Icons from "./Icons.svelte";
   import Note from "./note/Page.svelte";
+  import NotesList from "./notes-list/Page.svelte";
 
   const { label } = getCurrentWebview();
   setLabelContext(label);
@@ -15,8 +16,10 @@
 
 <Icons />
 
-{#if label === NOTE_LIST_LABEL}
-  <!-- notes list -->
+<NotesList />
+
+<!-- {#if label === NOTE_LIST_LABEL}
+  <NotesList />
 {:else}
   <Note />
-{/if}
+{/if} -->
