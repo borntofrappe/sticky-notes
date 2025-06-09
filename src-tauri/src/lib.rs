@@ -220,9 +220,6 @@ pub fn run() {
         .setup(|app| {
             let store = tauri_plugin_store::StoreBuilder::new(app, STORE_PATH).build()?;
 
-            // TEMP FORGET ALL VIEWS
-            let _ = store.clear();
-
             if !store.has(STORE_KEY) {
                 let default_view = View {
                     label: String::from("main"),
