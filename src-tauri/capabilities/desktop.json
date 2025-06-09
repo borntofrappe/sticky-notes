@@ -1,7 +1,7 @@
 {
   "identifier": "desktop-capability",
   "platforms": ["macOS", "windows", "linux"],
-  "windows": ["main", "note-*"],
+  "windows": ["main", "note-*", "notes-list"],
   "permissions": [
     "core:window:allow-start-dragging",
     "core:window:allow-close"
