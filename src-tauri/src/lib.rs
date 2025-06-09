@@ -17,6 +17,7 @@ struct View {
     y: f64,
     width: f64,
     height: f64,
+    visible: bool,
 }
 
 #[tauri::command]
@@ -45,6 +46,7 @@ async fn create_note(window: tauri::Window, label: String) {
         y,
         width,
         height,
+        visible: true,
     });
 
     store.set(STORE_KEY, json!(views));
@@ -115,6 +117,8 @@ async fn close_window(window: tauri::Window) {
     let width: f64 = size.width.into();
     let height: f64 = size.height.into();
 
+    let visible_views = views.iter().filter(|view| view.visible == true).count();
+
     if let Some(index) = views
         .iter()
         .position(|view| *view.label == label.to_string())
@@ -123,6 +127,9 @@ async fn close_window(window: tauri::Window) {
         views[index].y = y;
         views[index].width = width;
         views[index].height = height;
+        if visible_views > 1 {
+            views[index].visible = false
+        }
     }
 
     store.set(STORE_KEY, json!(views));
@@ -148,13 +155,17 @@ pub fn run() {
         .setup(|app| {
             let store = tauri_plugin_store::StoreBuilder::new(app, STORE_PATH).build()?;
 
+            // TEMP FORGET ALL VIEWS
+            let _ = store.clear();
+
             if !store.has(STORE_KEY) {
                 let view = View {
                     label: String::from("main"),
-                    x: 180.0,
-                    y: 180.0,
-                    width: 385.0,
-                    height: 400.0,
+                    x: 120.0,
+                    y: 120.0,
+                    width: 320.0,
+                    height: 320.0,
+                    visible: true,
                 };
                 store.set(STORE_KEY, json!(vec![view]));
             }
@@ -171,17 +182,20 @@ pub fn run() {
                     y,
                     width,
                     height,
+                    visible,
                 } = view;
-                let _ = tauri::WebviewWindowBuilder::new(
-                    app,
-                    label,
-                    tauri::WebviewUrl::App("index.html".into()),
-                )
-                .position(x, y)
-                .inner_size(width, height)
-                .transparent(TRANSPARENT)
-                .decorations(DECORATIONS)
-                .build()?;
+                if visible {
+                    let _ = tauri::WebviewWindowBuilder::new(
+                        app,
+                        label,
+                        tauri::WebviewUrl::App("index.html".into()),
+                    )
+                    .position(x, y)
+                    .inner_size(width, height)
+                    .transparent(TRANSPARENT)
+                    .decorations(DECORATIONS)
+                    .build()?;
+                }
             }
 
             store.close_resource();
