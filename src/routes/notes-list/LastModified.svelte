@@ -3,6 +3,10 @@
     dateString: string;
   };
 
+  let { dateString }: Props = $props();
+
+  const DAY_MS = 24 * 60 * 60 * 1000;
+
   const MONTHS = [
     "Jan",
     "Feb",
@@ -17,10 +21,6 @@
     "Nov",
     "Dec",
   ];
-
-  const DAY_MS = 24 * 60 * 60 * 1000;
-
-  let { dateString }: Props = $props();
 
   const pad = (number: number): string =>
     `${number.toString().padStart(2, "0")}`;

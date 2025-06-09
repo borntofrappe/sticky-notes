@@ -2,8 +2,8 @@ import { invoke } from "@tauri-apps/api/core";
 import Database from "@tauri-apps/plugin-sql";
 import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "./constants";
 
-export const closeNote = async () => {
-  invoke("close_note");
+export const closeWindow = async () => {
+  invoke("close_window");
 };
 
 export const newNote = async () => {

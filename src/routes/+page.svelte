@@ -16,10 +16,8 @@
 
 <Icons />
 
-<NotesList />
-
-<!-- {#if label === NOTE_LIST_LABEL}
+{#if label === NOTE_LIST_LABEL}
   <NotesList />
 {:else}
   <Note />
-{/if} -->
+{/if}

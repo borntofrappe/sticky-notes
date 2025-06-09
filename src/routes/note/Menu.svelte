@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { closeNote, newNote } from "$lib/tauri-commands";
+  import { closeWindow, newNote } from "$lib/tauri-commands";
 
   import NoteDialog from "./Dialog.svelte";
 
@@ -33,7 +33,7 @@
     </svg>
   </button>
   <button
-    onclick={closeNote}
+    onclick={closeWindow}
     aria-label="Close note"
     class="icon-button"
     data-anchor="bottom right"

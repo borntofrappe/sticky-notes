@@ -8,7 +8,7 @@
 
   import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "$lib/constants";
   import { getLabelContext } from "$lib/context";
-  import { closeNote, deleteNote, newNote } from "$lib/tauri-commands";
+  import { closeWindow, deleteNote, newNote } from "$lib/tauri-commands";
 
   import Menu from "./Menu.svelte";
   import MenuEditor from "./MenuEditor.svelte";
@@ -17,7 +17,7 @@
   let options = $state.raw<Set<Command>>(new SvelteSet());
   let editor: HTMLDivElement;
   let pointerdown: boolean = false;
-  const timeoutDelay = 200;
+  const saveDebounceDelay = 200;
   let timeoutID: number;
 
   onMount(async () => {
@@ -68,7 +68,7 @@
 
     timeoutID = setTimeout(() => {
       saveNote();
-    }, timeoutDelay);
+    }, saveDebounceDelay);
   };
 
   const toggleOption = (option: Command) => {
@@ -130,7 +130,7 @@
           newNote();
           break;
         case "w":
-          closeNote();
+          closeWindow();
           break;
         case "d":
           deleteNote(label);

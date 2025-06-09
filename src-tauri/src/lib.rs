@@ -66,7 +66,34 @@ async fn create_note(window: tauri::Window, label: String) {
 }
 
 #[tauri::command]
-fn close_note(window: tauri::Window) {
+async fn delete_note(window: tauri::Window) {
+    let label = window.label();
+
+    let store = window.store(STORE_PATH).unwrap();
+    let value = store.get(STORE_KEY).expect("");
+    let mut views: Vec<View> = serde_json::from_value(value).unwrap();
+
+    if let Some(index) = views
+        .iter()
+        .position(|view| *view.label == label.to_string())
+    {
+        views.remove(index);
+    }
+
+    if views.len() == 0 {
+        let _ = store.delete(STORE_KEY);
+    } else {
+        store.set(STORE_KEY, json!(views));
+    }
+
+    let _ = store.save();
+    store.close_resource();
+
+    let _ = window.get_webview_window(&label).unwrap().close();
+}
+
+#[tauri::command]
+async fn close_window(window: tauri::Window) {
     let label = window.label();
 
     let store = window.store(STORE_PATH).unwrap();
@@ -99,33 +126,6 @@ fn close_note(window: tauri::Window) {
     }
 
     store.set(STORE_KEY, json!(views));
-    let _ = store.save();
-    store.close_resource();
-
-    let _ = window.get_webview_window(&label).unwrap().close();
-}
-
-#[tauri::command]
-fn delete_note(window: tauri::Window) {
-    let label = window.label();
-
-    let store = window.store(STORE_PATH).unwrap();
-    let value = store.get(STORE_KEY).expect("");
-    let mut views: Vec<View> = serde_json::from_value(value).unwrap();
-
-    if let Some(index) = views
-        .iter()
-        .position(|view| *view.label == label.to_string())
-    {
-        views.remove(index);
-    }
-
-    if views.len() == 0 {
-        let _ = store.delete(STORE_KEY);
-    } else {
-        store.set(STORE_KEY, json!(views));
-    }
-
     let _ = store.save();
     store.close_resource();
 
@@ -196,7 +196,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             create_note,
-            close_note,
+            close_window,
             delete_note
         ])
         .run(tauri::generate_context!())
