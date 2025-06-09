@@ -136,6 +136,46 @@ async fn close_window(window: tauri::Window) {
     let _ = window.get_webview_window(&label).unwrap().close();
 }
 
+#[tauri::command]
+async fn show_window(window: tauri::Window, label: String) {
+    let notes_list = window.get_webview_window(&label);
+
+    match notes_list {
+        Some(window) => {
+            let _ = window.set_focus();
+        }
+        None => {
+            // get and show instead of adding anew
+            let store = window.store(STORE_PATH).unwrap();
+            let value = store.get(STORE_KEY).expect("");
+            let mut views: Vec<View> = serde_json::from_value(value).unwrap();
+
+            if let Some(view) = views
+                .iter_mut()
+                .find(|v| *v.label == label.to_string())
+            {
+                let _ = tauri::WebviewWindowBuilder::new(
+                    &window,
+                    view.label.clone(),
+                    tauri::WebviewUrl::App("index.html".into()),
+                )
+                .position(view.x, view.y)
+                .inner_size(view.width, view.height)
+                .transparent(TRANSPARENT)
+                .decorations(DECORATIONS)
+                .build()
+                .unwrap();
+
+                view.visible = true;
+                store.set(STORE_KEY, json!(views));
+
+                let _ = store.save();
+                store.close_resource();
+            };
+        }
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let migrations = vec![
@@ -215,8 +255,9 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             create_note,
+            delete_note,
             close_window,
-            delete_note
+            show_window,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

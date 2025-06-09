@@ -3,9 +3,13 @@
 
   import { onMount } from "svelte";
 
-  import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "$lib/constants";
+  import {
+    DB_PATH,
+    HIGHLIGHT_QUALIFIED_NAME,
+    NOTE_LIST_LABEL,
+  } from "$lib/constants";
   import { getLabelContext } from "$lib/context";
-  import { deleteNote } from "$lib/tauri-commands";
+  import { deleteNote, showWindow } from "$lib/tauri-commands";
 
   type Props = {
     dialog: HTMLDialogElement;
@@ -54,7 +58,7 @@
   };
 
   const listNotes = () => {
-    // TODO: ACTUALLY DO THE THING
+    showWindow(NOTE_LIST_LABEL);
     dialog.close();
   };
 </script>
