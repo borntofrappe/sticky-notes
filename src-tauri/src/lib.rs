@@ -7,6 +7,7 @@ use tauri_plugin_store::StoreExt;
 const STORE_PATH: &str = "store.bin";
 const DB_PATH: &str = "sqlite:notes.db";
 const STORE_KEY: &str = "views";
+const NOTES_LIST_LABEL: &str = "notes-list";
 const TRANSPARENT: bool = true;
 const DECORATIONS: bool = false;
 
@@ -82,11 +83,7 @@ async fn delete_note(window: tauri::Window) {
         views.remove(index);
     }
 
-    if views.len() == 0 {
-        let _ = store.delete(STORE_KEY);
-    } else {
-        store.set(STORE_KEY, json!(views));
-    }
+    store.set(STORE_KEY, json!(views));
 
     let _ = store.save();
     store.close_resource();
@@ -159,7 +156,7 @@ pub fn run() {
             let _ = store.clear();
 
             if !store.has(STORE_KEY) {
-                let view = View {
+                let default_view = View {
                     label: String::from("main"),
                     x: 120.0,
                     y: 120.0,
@@ -167,7 +164,15 @@ pub fn run() {
                     height: 320.0,
                     visible: true,
                 };
-                store.set(STORE_KEY, json!(vec![view]));
+                let notes_list_view: View = View {
+                    label: String::from(NOTES_LIST_LABEL),
+                    x: 120.0,
+                    y: 120.0,
+                    width: 480.0,
+                    height: 680.0,
+                    visible: false,
+                };
+                store.set(STORE_KEY, json!(vec![default_view, notes_list_view]));
             }
 
             let _ = store.save();
