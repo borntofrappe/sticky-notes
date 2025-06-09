@@ -1,17 +1,8 @@
-<script lang="ts">
+<script>
   import { createNote, closeWindow } from "$lib/tauri-commands";
-
-  import NoteDialog from "./Dialog.svelte";
-
-  let dialog: HTMLDialogElement;
-  const openMenu = () => {
-    dialog.showModal();
-  };
 </script>
 
-<NoteDialog bind:dialog />
-
-<nav data-tauri-drag-region class="note--start" aria-label="Menu note">
+<nav data-tauri-drag-region class="notes-list--menu" aria-label="Menu">
   <button
     onclick={createNote}
     aria-label="New note"
@@ -23,18 +14,8 @@
     </svg>
   </button>
   <button
-    onclick={openMenu}
-    aria-label="Menu"
-    class="icon-button"
-    data-anchor="bottom"
-  >
-    <svg width="1em" height="1em" viewBox="0 0 1 1">
-      <use href="#icon-ellipsis" />
-    </svg>
-  </button>
-  <button
     onclick={closeWindow}
-    aria-label="Close note"
+    aria-label="Close window"
     class="icon-button"
     data-anchor="bottom right"
   >

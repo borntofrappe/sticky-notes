@@ -6,9 +6,18 @@
   import { onMount } from "svelte";
   import { SvelteSet } from "svelte/reactivity";
 
-  import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "$lib/constants";
+  import {
+    DB_PATH,
+    HIGHLIGHT_QUALIFIED_NAME,
+    NOTE_LIST_LABEL,
+  } from "$lib/constants";
   import { getLabelContext } from "$lib/context";
-  import { closeNote, deleteNote, newNote } from "$lib/tauri-commands";
+  import {
+    createNote,
+    deleteNote,
+    closeWindow,
+    showWindow,
+  } from "$lib/tauri-commands";
 
   import Menu from "./Menu.svelte";
   import MenuEditor from "./MenuEditor.svelte";
@@ -17,7 +26,7 @@
   let options = $state.raw<Set<Command>>(new SvelteSet());
   let editor: HTMLDivElement;
   let pointerdown: boolean = false;
-  const timeoutDelay = 200;
+  const saveDebounceDelay = 200;
   let timeoutID: number;
 
   onMount(async () => {
@@ -68,7 +77,7 @@
 
     timeoutID = setTimeout(() => {
       saveNote();
-    }, timeoutDelay);
+    }, saveDebounceDelay);
   };
 
   const toggleOption = (option: Command) => {
@@ -123,17 +132,22 @@
   };
 
   const onshortcut = async (event: KeyboardEvent) => {
-    const { key, ctrlKey } = event;
-    if (ctrlKey) {
+    const { key, ctrlKey, altKey } = event;
+    if (altKey && key === "F4") {
+      closeWindow();
+    } else if (ctrlKey) {
       switch (key.toLowerCase()) {
         case "n":
-          newNote();
+          createNote();
           break;
         case "w":
-          closeNote();
+          closeWindow();
           break;
         case "d":
           deleteNote(label);
+          break;
+        case "h":
+          showWindow(NOTE_LIST_LABEL);
           break;
       }
     }

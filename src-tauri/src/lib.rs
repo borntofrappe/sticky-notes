@@ -4,12 +4,6 @@ use tauri::{LogicalPosition, LogicalSize, Manager};
 use tauri_plugin_sql::{Migration, MigrationKind};
 use tauri_plugin_store::StoreExt;
 
-const STORE_PATH: &str = "store.bin";
-const DB_PATH: &str = "sqlite:notes.db";
-const STORE_KEY: &str = "views";
-const TRANSPARENT: bool = true;
-const DECORATIONS: bool = false;
-
 #[derive(Serialize, Deserialize, Debug)]
 struct View {
     label: String,
@@ -17,24 +11,60 @@ struct View {
     y: f64,
     width: f64,
     height: f64,
+    visible: bool,
 }
+
+struct Rect {
+    x: f64,
+    y: f64,
+    width: f64,
+    height: f64,
+}
+
+const STORE_PATH: &str = "store.bin";
+const DB_PATH: &str = "sqlite:notes.db";
+const STORE_KEY: &str = "views";
+const NOTES_LIST_LABEL: &str = "notes-list";
+const TRANSPARENT: bool = true;
+const DECORATIONS: bool = false;
+
+const NOTE_RECT: Rect = Rect {
+    x: 150.0,
+    y: 150.0,
+    width: 320.0,
+    height: 320.0,
+};
+
+const NOTES_LIST_RECT: Rect = Rect {
+    x: 120.0,
+    y: 120.0,
+    width: 480.0,
+    height: 680.0,
+};
 
 #[tauri::command]
 async fn create_note(window: tauri::Window, label: String) {
+    let mut x: f64 = NOTE_RECT.x;
+    let mut y: f64 = NOTE_RECT.y;
+    let mut width: f64 = NOTE_RECT.width;
+    let mut height: f64 = NOTE_RECT.height;
+
     let webview_window = window.get_webview_window(window.label()).unwrap();
-    let inner_position = webview_window.inner_position().unwrap();
-    let inner_size = webview_window.inner_size().unwrap();
-    let scale_factor = webview_window
-        .current_monitor()
-        .unwrap()
-        .map(|m| m.scale_factor())
-        .unwrap_or(1.);
-    let position: LogicalPosition<u32> = inner_position.to_logical(scale_factor);
-    let size: LogicalSize<u32> = inner_size.to_logical(scale_factor);
-    let x: f64 = position.x.into();
-    let y: f64 = position.y.into();
-    let width: f64 = size.width.into();
-    let height: f64 = size.height.into();
+    if webview_window.label() != NOTES_LIST_LABEL {
+        let inner_position = webview_window.inner_position().unwrap();
+        let inner_size = webview_window.inner_size().unwrap();
+        let scale_factor = webview_window
+            .current_monitor()
+            .unwrap()
+            .map(|m| m.scale_factor())
+            .unwrap_or(1.);
+        let position: LogicalPosition<u32> = inner_position.to_logical(scale_factor);
+        let size: LogicalSize<u32> = inner_size.to_logical(scale_factor);
+        x = position.x.into();
+        y = position.y.into();
+        width = size.width.into();
+        height = size.height.into();
+    }
 
     let store = webview_window.store(STORE_PATH).unwrap();
     let value = store.get(STORE_KEY).expect("");
@@ -45,6 +75,7 @@ async fn create_note(window: tauri::Window, label: String) {
         y,
         width,
         height,
+        visible: true,
     });
 
     store.set(STORE_KEY, json!(views));
@@ -66,7 +97,30 @@ async fn create_note(window: tauri::Window, label: String) {
 }
 
 #[tauri::command]
-fn close_note(window: tauri::Window) {
+async fn delete_note(window: tauri::Window) {
+    let label = window.label();
+
+    let store = window.store(STORE_PATH).unwrap();
+    let value = store.get(STORE_KEY).expect("");
+    let mut views: Vec<View> = serde_json::from_value(value).unwrap();
+
+    if let Some(index) = views
+        .iter()
+        .position(|view| *view.label == label.to_string())
+    {
+        views.remove(index);
+    }
+
+    store.set(STORE_KEY, json!(views));
+
+    let _ = store.save();
+    store.close_resource();
+
+    let _ = window.get_webview_window(&label).unwrap().close();
+}
+
+#[tauri::command]
+async fn close_window(window: tauri::Window) {
     let label = window.label();
 
     let store = window.store(STORE_PATH).unwrap();
@@ -88,6 +142,8 @@ fn close_note(window: tauri::Window) {
     let width: f64 = size.width.into();
     let height: f64 = size.height.into();
 
+    let visible_views = views.iter().filter(|view| view.visible == true).count();
+
     if let Some(index) = views
         .iter()
         .position(|view| *view.label == label.to_string())
@@ -96,6 +152,9 @@ fn close_note(window: tauri::Window) {
         views[index].y = y;
         views[index].width = width;
         views[index].height = height;
+        if visible_views > 1 {
+            views[index].visible = false
+        }
     }
 
     store.set(STORE_KEY, json!(views));
@@ -106,30 +165,43 @@ fn close_note(window: tauri::Window) {
 }
 
 #[tauri::command]
-fn delete_note(window: tauri::Window) {
-    let label = window.label();
+async fn show_window(window: tauri::Window, label: String) {
+    let notes_list = window.get_webview_window(&label);
 
-    let store = window.store(STORE_PATH).unwrap();
-    let value = store.get(STORE_KEY).expect("");
-    let mut views: Vec<View> = serde_json::from_value(value).unwrap();
+    match notes_list {
+        Some(window) => {
+            let _ = window.set_focus();
+        }
+        None => {
+            // get and show instead of adding anew
+            let store = window.store(STORE_PATH).unwrap();
+            let value = store.get(STORE_KEY).expect("");
+            let mut views: Vec<View> = serde_json::from_value(value).unwrap();
 
-    if let Some(index) = views
-        .iter()
-        .position(|view| *view.label == label.to_string())
-    {
-        views.remove(index);
+            if let Some(view) = views
+                .iter_mut()
+                .find(|v| *v.label == label.to_string())
+            {
+                let _ = tauri::WebviewWindowBuilder::new(
+                    &window,
+                    view.label.clone(),
+                    tauri::WebviewUrl::App("index.html".into()),
+                )
+                .position(view.x, view.y)
+                .inner_size(view.width, view.height)
+                .transparent(TRANSPARENT)
+                .decorations(DECORATIONS)
+                .build()
+                .unwrap();
+
+                view.visible = true;
+                store.set(STORE_KEY, json!(views));
+
+                let _ = store.save();
+                store.close_resource();
+            };
+        }
     }
-
-    if views.len() == 0 {
-        let _ = store.delete(STORE_KEY);
-    } else {
-        store.set(STORE_KEY, json!(views));
-    }
-
-    let _ = store.save();
-    store.close_resource();
-
-    let _ = window.get_webview_window(&label).unwrap().close();
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -149,14 +221,23 @@ pub fn run() {
             let store = tauri_plugin_store::StoreBuilder::new(app, STORE_PATH).build()?;
 
             if !store.has(STORE_KEY) {
-                let view = View {
+                let default_view = View {
                     label: String::from("main"),
-                    x: 180.0,
-                    y: 180.0,
-                    width: 385.0,
-                    height: 400.0,
+                    x: NOTE_RECT.x,
+                    y: NOTE_RECT.y,
+                    width: NOTE_RECT.width,
+                    height: NOTE_RECT.height,
+                    visible: true,
                 };
-                store.set(STORE_KEY, json!(vec![view]));
+                let notes_list_view: View = View {
+                    label: String::from(NOTES_LIST_LABEL),
+                    x: NOTES_LIST_RECT.x,
+                    y: NOTES_LIST_RECT.y,
+                    width: NOTES_LIST_RECT.width,
+                    height: NOTES_LIST_RECT.height,
+                    visible: false,
+                };
+                store.set(STORE_KEY, json!(vec![default_view, notes_list_view]));
             }
 
             let _ = store.save();
@@ -171,17 +252,20 @@ pub fn run() {
                     y,
                     width,
                     height,
+                    visible,
                 } = view;
-                let _ = tauri::WebviewWindowBuilder::new(
-                    app,
-                    label,
-                    tauri::WebviewUrl::App("index.html".into()),
-                )
-                .position(x, y)
-                .inner_size(width, height)
-                .transparent(TRANSPARENT)
-                .decorations(DECORATIONS)
-                .build()?;
+                if visible {
+                    let _ = tauri::WebviewWindowBuilder::new(
+                        app,
+                        label,
+                        tauri::WebviewUrl::App("index.html".into()),
+                    )
+                    .position(x, y)
+                    .inner_size(width, height)
+                    .transparent(TRANSPARENT)
+                    .decorations(DECORATIONS)
+                    .build()?;
+                }
             }
 
             store.close_resource();
@@ -196,8 +280,9 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             create_note,
-            close_note,
-            delete_note
+            delete_note,
+            close_window,
+            show_window,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
