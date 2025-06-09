@@ -8,7 +8,7 @@
 
   import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "$lib/constants";
   import { getLabelContext } from "$lib/context";
-  import { closeWindow, deleteNote, newNote } from "$lib/tauri-commands";
+  import { createNote, deleteNote, closeWindow } from "$lib/tauri-commands";
 
   import Menu from "./Menu.svelte";
   import MenuEditor from "./MenuEditor.svelte";
@@ -127,7 +127,7 @@
     if (ctrlKey) {
       switch (key.toLowerCase()) {
         case "n":
-          newNote();
+          createNote();
           break;
         case "w":
           closeWindow();

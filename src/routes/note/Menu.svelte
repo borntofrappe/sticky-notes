@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { closeWindow, newNote } from "$lib/tauri-commands";
+  import { createNote, closeWindow } from "$lib/tauri-commands";
 
   import NoteDialog from "./Dialog.svelte";
 
@@ -13,7 +13,7 @@
 
 <nav data-tauri-drag-region class="note--start" aria-label="Menu note">
   <button
-    onclick={newNote}
+    onclick={createNote}
     aria-label="New note"
     class="icon-button"
     data-anchor="bottom left"

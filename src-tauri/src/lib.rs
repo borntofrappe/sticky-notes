@@ -4,13 +4,6 @@ use tauri::{LogicalPosition, LogicalSize, Manager};
 use tauri_plugin_sql::{Migration, MigrationKind};
 use tauri_plugin_store::StoreExt;
 
-const STORE_PATH: &str = "store.bin";
-const DB_PATH: &str = "sqlite:notes.db";
-const STORE_KEY: &str = "views";
-const NOTES_LIST_LABEL: &str = "notes-list";
-const TRANSPARENT: bool = true;
-const DECORATIONS: bool = false;
-
 #[derive(Serialize, Deserialize, Debug)]
 struct View {
     label: String,
@@ -21,22 +14,57 @@ struct View {
     visible: bool,
 }
 
+struct Rect {
+    x: f64,
+    y: f64,
+    width: f64,
+    height: f64,
+}
+
+const STORE_PATH: &str = "store.bin";
+const DB_PATH: &str = "sqlite:notes.db";
+const STORE_KEY: &str = "views";
+const NOTES_LIST_LABEL: &str = "notes-list";
+const TRANSPARENT: bool = true;
+const DECORATIONS: bool = false;
+
+const NOTE_RECT: Rect = Rect {
+    x: 150.0,
+    y: 150.0,
+    width: 320.0,
+    height: 320.0,
+};
+
+const NOTES_LIST_RECT: Rect = Rect {
+    x: 120.0,
+    y: 120.0,
+    width: 480.0,
+    height: 680.0,
+};
+
 #[tauri::command]
 async fn create_note(window: tauri::Window, label: String) {
+    let mut x: f64 = NOTE_RECT.x;
+    let mut y: f64 = NOTE_RECT.y;
+    let mut width: f64 = NOTE_RECT.width;
+    let mut height: f64 = NOTE_RECT.height;
+
     let webview_window = window.get_webview_window(window.label()).unwrap();
-    let inner_position = webview_window.inner_position().unwrap();
-    let inner_size = webview_window.inner_size().unwrap();
-    let scale_factor = webview_window
-        .current_monitor()
-        .unwrap()
-        .map(|m| m.scale_factor())
-        .unwrap_or(1.);
-    let position: LogicalPosition<u32> = inner_position.to_logical(scale_factor);
-    let size: LogicalSize<u32> = inner_size.to_logical(scale_factor);
-    let x: f64 = position.x.into();
-    let y: f64 = position.y.into();
-    let width: f64 = size.width.into();
-    let height: f64 = size.height.into();
+    if webview_window.label() != NOTES_LIST_LABEL {
+        let inner_position = webview_window.inner_position().unwrap();
+        let inner_size = webview_window.inner_size().unwrap();
+        let scale_factor = webview_window
+            .current_monitor()
+            .unwrap()
+            .map(|m| m.scale_factor())
+            .unwrap_or(1.);
+        let position: LogicalPosition<u32> = inner_position.to_logical(scale_factor);
+        let size: LogicalSize<u32> = inner_size.to_logical(scale_factor);
+        x = position.x.into();
+        y = position.y.into();
+        width = size.width.into();
+        height = size.height.into();
+    }
 
     let store = webview_window.store(STORE_PATH).unwrap();
     let value = store.get(STORE_KEY).expect("");
@@ -198,18 +226,18 @@ pub fn run() {
             if !store.has(STORE_KEY) {
                 let default_view = View {
                     label: String::from("main"),
-                    x: 120.0,
-                    y: 120.0,
-                    width: 320.0,
-                    height: 320.0,
+                    x: NOTE_RECT.x,
+                    y: NOTE_RECT.y,
+                    width: NOTE_RECT.width,
+                    height: NOTE_RECT.height,
                     visible: true,
                 };
                 let notes_list_view: View = View {
                     label: String::from(NOTES_LIST_LABEL),
-                    x: 120.0,
-                    y: 120.0,
-                    width: 480.0,
-                    height: 680.0,
+                    x: NOTES_LIST_RECT.x,
+                    y: NOTES_LIST_RECT.y,
+                    width: NOTES_LIST_RECT.width,
+                    height: NOTES_LIST_RECT.height,
                     visible: false,
                 };
                 store.set(STORE_KEY, json!(vec![default_view, notes_list_view]));

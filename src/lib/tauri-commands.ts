@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import Database from "@tauri-apps/plugin-sql";
 import { DB_PATH, HIGHLIGHT_QUALIFIED_NAME } from "./constants";
 
-export const newNote = async () => {
+export const createNote = async () => {
   const documentHighlight = document.documentElement.getAttribute(
     HIGHLIGHT_QUALIFIED_NAME
   );
