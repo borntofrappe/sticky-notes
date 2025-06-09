@@ -6,7 +6,7 @@
   import { onMount } from "svelte";
 
   import { DB_PATH } from "$lib/constants";
-  import { showWindow } from "$lib/tauri-commands";
+  import { createNote, showWindow, closeWindow } from "$lib/tauri-commands";
 
   import Menu from "./Menu.svelte";
   import Placeholder from "./Placeholder.svelte";
@@ -27,7 +27,22 @@
       return aDate.valueOf() < bDate.valueOf() ? 1 : -1;
     });
   };
+
+  const onshortcut = async (event: KeyboardEvent) => {
+    const { key, ctrlKey, altKey } = event;
+    if (altKey && key === "F4") {
+      closeWindow();
+    } else if (ctrlKey) {
+      switch (key.toLowerCase()) {
+        case "n":
+          createNote();
+          break;
+      }
+    }
+  };
 </script>
+
+<svelte:window onkeydown={onshortcut} />
 
 <div class="notes-list">
   <Menu />
