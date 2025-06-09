@@ -6,6 +6,7 @@
   import { onMount } from "svelte";
 
   import { DB_PATH } from "$lib/constants";
+  import { showWindow } from "$lib/tauri-commands";
 
   import Menu from "./Menu.svelte";
   import Placeholder from "./Placeholder.svelte";
@@ -41,7 +42,20 @@
       </figure>
     {:else}
       {#each sort(notes) as note}
-        <div class="notes-list--note" data-color={note.highlight}>
+        <div
+          role="button"
+          aria-label="Open note"
+          tabindex="0"
+          onkeydown={(event) => {
+            if (event.key !== "Enter") return;
+            showWindow(note.label);
+          }}
+          ondblclick={() => {
+            showWindow(note.label);
+          }}
+          class="notes-list--note"
+          data-color={note.highlight}
+        >
           <LastModified dateString={note.lastModified} />
           <div>{@html note.text}</div>
         </div>
