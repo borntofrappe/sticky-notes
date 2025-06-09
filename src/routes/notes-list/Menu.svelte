@@ -1,5 +1,10 @@
+<script>
+  import { createNote, closeWindow } from "$lib/tauri-commands";
+</script>
+
 <nav data-tauri-drag-region class="notes-list--menu" aria-label="Menu">
   <button
+    onclick={createNote}
     aria-label="New note"
     class="icon-button"
     data-anchor="bottom left"
@@ -9,6 +14,7 @@
     </svg>
   </button>
   <button
+    onclick={closeWindow}
     aria-label="Close window"
     class="icon-button"
     data-anchor="bottom right"
