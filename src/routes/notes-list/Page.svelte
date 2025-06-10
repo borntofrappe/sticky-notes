@@ -59,6 +59,9 @@
         case "n":
           createNote();
           break;
+        case "w":
+          closeWindow(label);
+          break;
       }
     }
   };
