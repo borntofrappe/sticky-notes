@@ -76,15 +76,18 @@
     <h1>Sticky notes</h1>
 
     {#if notes.length === 0}
-      <figure class="notes-list--figure">
+      <figure
+        in:fade={{ duration: DURATIONS.in, delay: DURATIONS.out }}
+        class="notes-list--figure"
+      >
         <Placeholder />
         <figcaption>Tap the new note button above to create a note</figcaption>
       </figure>
     {:else}
       {#each sort(notes) as note (note.label)}
         <div
-          in:fade={{ duration: DURATIONS.in }}
-          out:fade={{ duration: DURATIONS.out }}
+          in:fade|global={{ duration: DURATIONS.in }}
+          out:fade|global={{ duration: DURATIONS.out }}
           animate:flip={{ duration: (d) => DURATIONS.animate(d) }}
           role="button"
           aria-label="Open note"
