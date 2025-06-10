@@ -43,6 +43,7 @@
         lastModified: new Date().toString(),
         highlight: "yellow",
         text: "",
+        open: true,
       };
       document.documentElement.setAttribute(
         HIGHLIGHT_QUALIFIED_NAME,
@@ -50,8 +51,8 @@
       );
 
       await db.execute(
-        "INSERT into notes (label, lastModified, highlight, text) VALUES ($1, $2, $3, $4)",
-        [note.label, note.lastModified, note.highlight, note.text]
+        "INSERT into notes (label, lastModified, highlight, text, open) VALUES ($1, $2, $3, $4, $5)",
+        [note.label, note.lastModified, note.highlight, note.text, note.open]
       );
     } else {
       const [note] = result;
@@ -138,14 +139,14 @@
   const onshortcut = async (event: KeyboardEvent) => {
     const { key, ctrlKey, altKey } = event;
     if (altKey && key === "F4") {
-      closeWindow();
+      closeWindow(label);
     } else if (ctrlKey) {
       switch (key.toLowerCase()) {
         case "n":
           createNote();
           break;
         case "w":
-          closeWindow();
+          closeWindow(label);
           break;
         case "d":
           deleteNote(label);

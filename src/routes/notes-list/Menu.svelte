@@ -1,5 +1,8 @@
 <script>
+  import { getLabelContext } from "$lib/context";
   import { createNote, closeWindow } from "$lib/tauri-commands";
+
+  const label = getLabelContext();
 </script>
 
 <nav data-tauri-drag-region class="notes-list--menu" aria-label="Menu">
@@ -14,7 +17,9 @@
     </svg>
   </button>
   <button
-    onclick={closeWindow}
+    onclick={() => {
+      closeWindow(label);
+    }}
     aria-label="Close window"
     class="icon-button"
     data-anchor="bottom right"

@@ -1,7 +1,10 @@
 <script lang="ts">
+  import { getLabelContext } from "$lib/context";
   import { createNote, closeWindow } from "$lib/tauri-commands";
 
   import NoteDialog from "./Dialog.svelte";
+
+  const label = getLabelContext();
 
   let dialog: HTMLDialogElement;
   const openMenu = () => {
@@ -33,7 +36,9 @@
     </svg>
   </button>
   <button
-    onclick={closeWindow}
+    onclick={() => {
+      closeWindow(label);
+    }}
     aria-label="Close note"
     class="icon-button"
     data-anchor="bottom right"

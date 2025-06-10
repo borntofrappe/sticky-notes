@@ -7,11 +7,14 @@
   import { onDestroy, onMount } from "svelte";
 
   import { DB_PATH, NOTES_LIST_EVENT_NAME } from "$lib/constants";
+  import { getLabelContext } from "$lib/context";
   import { createNote, showWindow, closeWindow } from "$lib/tauri-commands";
 
   import Menu from "./Menu.svelte";
   import Placeholder from "./Placeholder.svelte";
   import LastModified from "./LastModified.svelte";
+
+  const label = getLabelContext();
 
   let notes: Note[] = $state([]);
   let unlisten: UnlistenFn;
@@ -42,7 +45,7 @@
   const onshortcut = async (event: KeyboardEvent) => {
     const { key, ctrlKey, altKey } = event;
     if (altKey && key === "F4") {
-      closeWindow();
+      closeWindow(label);
     } else if (ctrlKey) {
       switch (key.toLowerCase()) {
         case "n":
@@ -80,6 +83,7 @@
             showWindow(note.label);
           }}
           class="notes-list--note"
+          class:open={note.open}
           data-color={note.highlight}
         >
           <LastModified dateString={note.lastModified} />

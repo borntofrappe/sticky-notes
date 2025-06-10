@@ -178,10 +178,7 @@ async fn show_window(window: tauri::Window, label: String) {
             let value = store.get(STORE_KEY).expect("");
             let mut views: Vec<View> = serde_json::from_value(value).unwrap();
 
-            if let Some(view) = views
-                .iter_mut()
-                .find(|v| *v.label == label.to_string())
-            {
+            if let Some(view) = views.iter_mut().find(|v| *v.label == label.to_string()) {
                 let _ = tauri::WebviewWindowBuilder::new(
                     &window,
                     view.label.clone(),
@@ -210,7 +207,7 @@ pub fn run() {
         Migration {
             version: 1,
             description: "create_initial_table",
-            sql: "CREATE TABLE notes (id INTEGER PRIMARY KEY, label TEXT UNIQUE, lastModified TEXT, highlight TEXT, text TEXT);",
+            sql: "CREATE TABLE notes (id INTEGER PRIMARY KEY, label TEXT UNIQUE, lastModified TEXT, highlight TEXT, text TEXT, open INTEGER DEFAULT true);",
             kind: MigrationKind::Up,
         }
     ];

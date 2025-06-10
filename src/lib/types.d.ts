@@ -19,5 +19,6 @@ type Note = {
   label: string,
   lastModified: string;
   highlight: Color,
-  text: string
+  text: string,
+  open: boolean
 };

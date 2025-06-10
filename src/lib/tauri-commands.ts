@@ -19,12 +19,13 @@ export const createNote = async () => {
     lastModified: new Date().toString(),
     highlight: documentHighlight ? (documentHighlight as Color) : "yellow",
     text: "",
+    open: true,
   };
 
   const db = await Database.load(DB_PATH);
   await db.execute(
-    "INSERT into notes (label, lastModified, highlight, text) VALUES ($1, $2, $3, $4)",
-    [note.label, note.lastModified, note.highlight, note.text]
+    "INSERT into notes (label, lastModified, highlight, text, open) VALUES ($1, $2, $3, $4, $5)",
+    [note.label, note.lastModified, note.highlight, note.text, note.open]
   );
 
   invoke("create_note", {
@@ -36,19 +37,31 @@ export const createNote = async () => {
 
 export const deleteNote = async (label: string) => {
   const db = await Database.load(DB_PATH);
-
   await db.execute("DELETE FROM notes WHERE label = $1", [label]);
+
   invoke("delete_note");
 
   emitTo(NOTES_LIST_LABEL, NOTES_LIST_EVENT_NAME);
 };
 
-export const closeWindow = async () => {
+export const closeWindow = async (label: string) => {
+  const db = await Database.load(DB_PATH);
+  await db.execute("UPDATE notes SET open = false WHERE label = $1", [label]);
+
   invoke("close_window");
+
+  emitTo(NOTES_LIST_LABEL, NOTES_LIST_EVENT_NAME);
 };
 
 export const showWindow = async (label: string) => {
+  if (label !== NOTES_LIST_LABEL) {
+    const db = await Database.load(DB_PATH);
+    await db.execute("UPDATE notes SET open = true WHERE label = $1", [label]);
+  }
+
   invoke("show_window", {
     label,
   });
+
+  emitTo(NOTES_LIST_LABEL, NOTES_LIST_EVENT_NAME);
 };
