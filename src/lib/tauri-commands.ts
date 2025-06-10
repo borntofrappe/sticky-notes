@@ -45,12 +45,24 @@ export const deleteNote = async (label: string) => {
 };
 
 export const closeWindow = async (label: string) => {
-  const db = await Database.load(DB_PATH);
-  await db.execute("UPDATE notes SET open = false WHERE label = $1", [label]);
+  if (label === NOTES_LIST_LABEL) {
+    invoke("close_window");
+  } else {
+    const db = await Database.load(DB_PATH);
+    const [note] = (await db.select("SELECT * FROM notes WHERE label = $1", [
+      label,
+    ])) as [Note];
 
-  invoke("close_window");
-
-  emitTo(NOTES_LIST_LABEL, NOTES_LIST_EVENT_NAME);
+    if (note.text.trim() == "") {
+      deleteNote(label);
+    } else {
+      await db.execute("UPDATE notes SET open = false WHERE label = $1", [
+        label,
+      ]);
+      invoke("close_window");
+      emitTo(NOTES_LIST_LABEL, NOTES_LIST_EVENT_NAME);
+    }
+  }
 };
 
 export const showWindow = async (label: string) => {
