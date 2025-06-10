@@ -52,7 +52,8 @@
 }
 
 :where(ul) {
-  padding: revert;
+  padding-inline-start: 0;
+  list-style-position: inside;
 }
 
 :is(html, body) {
