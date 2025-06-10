@@ -2,7 +2,7 @@
   import "./page.css";
 
   import Database from "@tauri-apps/plugin-sql";
-  import { emitTo, listen } from "@tauri-apps/api/event";
+  import { emitTo } from "@tauri-apps/api/event";
 
   import { onMount } from "svelte";
   import { SvelteSet } from "svelte/reactivity";
@@ -161,7 +161,9 @@
     const { key, ctrlKey, shiftKey } = event;
 
     if (
-      ["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"].includes(key) ||
+      ["Backspace", "ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"].includes(
+        key
+      ) ||
       (ctrlKey && key.toLowerCase() === "a")
     ) {
       updateOptions();
