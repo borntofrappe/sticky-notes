@@ -101,7 +101,7 @@
     font-size: 0.8em;
     display: block;
     text-align: end;
-    color: var(--color-highlight, inherit);
+    color: var(--color-text-highlight, inherit);
   }
 
   &:focus {
@@ -135,29 +135,36 @@
 
   &[data-color="yellow"] {
     --color-highlight: var(--color-highlight-yellow);
+    --color-text-highlight: var(--color-highlight-yellow);
   }
 
   &[data-color="green"] {
     --color-highlight: var(--color-highlight-green);
+    --color-text-highlight: var(--color-highlight-green);
   }
 
   &[data-color="pink"] {
     --color-highlight: var(--color-highlight-pink);
+    --color-text-highlight: var(--color-highlight-pink);
   }
 
   &[data-color="purple"] {
     --color-highlight: var(--color-highlight-purple);
+    --color-text-highlight: var(--color-highlight-purple);
   }
 
   &[data-color="blue"] {
     --color-highlight: var(--color-highlight-blue);
+    --color-text-highlight: var(--color-highlight-blue);
   }
 
   &[data-color="grey"] {
     --color-highlight: var(--color-highlight-grey);
+    --color-text-highlight: var(--color-highlight-grey);
   }
 
   &[data-color="charcoal"] {
     --color-highlight: var(--color-highlight-charcoal);
+    --color-text-highlight: var(--color-text-3);
   }
 }
