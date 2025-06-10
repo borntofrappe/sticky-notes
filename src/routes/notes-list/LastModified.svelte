@@ -5,8 +5,6 @@
 
   let { dateString }: Props = $props();
 
-  const DAY_MS = 24 * 60 * 60 * 1000;
-
   const MONTHS = [
     "Jan",
     "Feb",
@@ -28,11 +26,14 @@
   const format = (dateString: string): string => {
     const date = new Date(dateString);
     const now = new Date();
-    if (now.valueOf() - date.valueOf() > DAY_MS) {
-      return `${date.getDate()} ${MONTHS[date.getMonth()]}`;
+    if (
+      date.getDate() === now.getDate() ||
+      date.getMonth() === now.getMonth() ||
+      date.getFullYear() === now.getFullYear()
+    ) {
+      return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
     }
-
-    return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    return `${date.getDate()} ${MONTHS[date.getMonth()]}`;
   };
 </script>
 
