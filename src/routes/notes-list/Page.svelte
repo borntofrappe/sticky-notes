@@ -2,10 +2,11 @@
   import "./page.css";
 
   import Database from "@tauri-apps/plugin-sql";
+  import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
 
-  import { DB_PATH } from "$lib/constants";
+  import { DB_PATH, NOTES_LIST_EVENT_NAME } from "$lib/constants";
   import { createNote, showWindow, closeWindow } from "$lib/tauri-commands";
 
   import Menu from "./Menu.svelte";
@@ -13,10 +14,20 @@
   import LastModified from "./LastModified.svelte";
 
   let notes: Note[] = $state([]);
+  let unlisten: UnlistenFn;
 
   onMount(async () => {
     const db = await Database.load(DB_PATH);
     notes = (await db.select("SELECT * FROM notes")) as [Note] | [];
+
+    unlisten = await listen(NOTES_LIST_EVENT_NAME, async () => {
+      const db = await Database.load(DB_PATH);
+      notes = (await db.select("SELECT * FROM notes")) as [Note] | [];
+    });
+  });
+
+  onDestroy(() => {
+    unlisten();
   });
 
   const sort = (notes: Note[]): Note[] => {

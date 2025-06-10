@@ -1,5 +1,6 @@
 <script lang="ts">
   import Database from "@tauri-apps/plugin-sql";
+  import { emitTo } from "@tauri-apps/api/event";
 
   import { onMount } from "svelte";
 
@@ -7,6 +8,7 @@
     DB_PATH,
     HIGHLIGHT_QUALIFIED_NAME,
     NOTE_LIST_LABEL,
+    NOTES_LIST_EVENT_NAME,
   } from "$lib/constants";
   import { getLabelContext } from "$lib/context";
   import { deleteNote, showWindow } from "$lib/tauri-commands";
@@ -52,6 +54,8 @@
       color,
       label,
     ]);
+
+    emitTo(NOTE_LIST_LABEL, NOTES_LIST_EVENT_NAME);
 
     await new Promise((resolve) => setTimeout(resolve, timeout));
     dialog.close();

@@ -2,6 +2,7 @@
   import "./page.css";
 
   import Database from "@tauri-apps/plugin-sql";
+  import { emitTo, listen } from "@tauri-apps/api/event";
 
   import { onMount } from "svelte";
   import { SvelteSet } from "svelte/reactivity";
@@ -10,6 +11,7 @@
     DB_PATH,
     HIGHLIGHT_QUALIFIED_NAME,
     NOTE_LIST_LABEL,
+    NOTES_LIST_EVENT_NAME,
   } from "$lib/constants";
   import { getLabelContext } from "$lib/context";
   import {
@@ -26,7 +28,7 @@
   let options = $state.raw<Set<Command>>(new SvelteSet());
   let editor: HTMLDivElement;
   let pointerdown: boolean = false;
-  const saveDebounceDelay = 200;
+  const saveDebounceDelay = 100;
   let timeoutID: number;
 
   onMount(async () => {
@@ -70,6 +72,8 @@
       "UPDATE notes SET text = $1, lastModified = $2 WHERE label = $3",
       [text, lastModified, label]
     );
+
+    emitTo(NOTE_LIST_LABEL, NOTES_LIST_EVENT_NAME);
   };
 
   const oninput = () => {
