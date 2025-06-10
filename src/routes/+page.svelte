@@ -3,7 +3,7 @@
 
   import { getCurrentWebview } from "@tauri-apps/api/webview";
 
-  import { NOTE_LIST_LABEL } from "$lib/constants";
+  import { NOTES_LIST_LABEL } from "$lib/constants";
   import { setLabelContext } from "$lib/context";
 
   import Icons from "./Icons.svelte";
@@ -16,7 +16,7 @@
 
 <Icons />
 
-{#if label === NOTE_LIST_LABEL}
+{#if label === NOTES_LIST_LABEL}
   <NotesList />
 {:else}
   <Note />

@@ -5,7 +5,7 @@ import { emitTo } from "@tauri-apps/api/event";
 import {
   DB_PATH,
   HIGHLIGHT_QUALIFIED_NAME,
-  NOTE_LIST_LABEL,
+  NOTES_LIST_LABEL,
   NOTES_LIST_EVENT_NAME,
 } from "./constants";
 
@@ -31,7 +31,7 @@ export const createNote = async () => {
     label: note.label,
   });
 
-  emitTo(NOTE_LIST_LABEL, NOTES_LIST_EVENT_NAME);
+  emitTo(NOTES_LIST_LABEL, NOTES_LIST_EVENT_NAME);
 };
 
 export const deleteNote = async (label: string) => {
@@ -40,7 +40,7 @@ export const deleteNote = async (label: string) => {
   await db.execute("DELETE FROM notes WHERE label = $1", [label]);
   invoke("delete_note");
 
-  emitTo(NOTE_LIST_LABEL, NOTES_LIST_EVENT_NAME);
+  emitTo(NOTES_LIST_LABEL, NOTES_LIST_EVENT_NAME);
 };
 
 export const closeWindow = async () => {

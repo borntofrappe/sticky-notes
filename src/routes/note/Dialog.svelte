@@ -7,7 +7,7 @@
   import {
     DB_PATH,
     HIGHLIGHT_QUALIFIED_NAME,
-    NOTE_LIST_LABEL,
+    NOTES_LIST_LABEL,
     NOTES_LIST_EVENT_NAME,
   } from "$lib/constants";
   import { getLabelContext } from "$lib/context";
@@ -55,14 +55,14 @@
       label,
     ]);
 
-    emitTo(NOTE_LIST_LABEL, NOTES_LIST_EVENT_NAME);
+    emitTo(NOTES_LIST_LABEL, NOTES_LIST_EVENT_NAME);
 
     await new Promise((resolve) => setTimeout(resolve, timeout));
     dialog.close();
   };
 
   const listNotes = () => {
-    showWindow(NOTE_LIST_LABEL);
+    showWindow(NOTES_LIST_LABEL);
     dialog.close();
   };
 </script>
