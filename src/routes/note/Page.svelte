@@ -62,6 +62,8 @@
       );
       editor.innerHTML = note.text;
     }
+
+    editor.focus();
   });
 
   const saveNote = async () => {
