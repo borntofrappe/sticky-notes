@@ -114,11 +114,6 @@
     options = currentCommands;
   };
 
-  const insertImage = () => {
-    // TODO document.execCommand('insertImage',...)
-    editor.focus();
-  };
-
   const onpointerdown = () => {
     pointerdown = true;
     updateOptions();
@@ -241,6 +236,5 @@
     insertUnorderedList={() => {
       toggleOption("insertUnorderedList");
     }}
-    {insertImage}
   />
 </main>

@@ -6,7 +6,6 @@
     underline: () => void;
     strikeThrough: () => void;
     insertUnorderedList: () => void;
-    insertImage: () => void;
   };
 
   let {
@@ -16,7 +15,6 @@
     underline,
     strikeThrough,
     insertUnorderedList,
-    insertImage,
   }: Props = $props();
 </script>
 
@@ -70,11 +68,6 @@
   >
     <svg width="1em" height="1em" viewBox="0 0 1 1">
       <use href="#icon-unordered-list" />
-    </svg>
-  </button>
-  <button onclick={insertImage} aria-label="Add image" class="icon-button">
-    <svg width="1em" height="1em" viewBox="0 0 1 1">
-      <use href="#icon-image" />
     </svg>
   </button>
 </nav>
