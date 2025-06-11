@@ -109,6 +109,41 @@
     content: attr(placeholder);
     color: var(--color-text-2);
   }
+
+  &::selection {
+    color: var(--color-text-1);
+    background: oklch(
+      from var(--color-selection, var(--color-surface-2)) l c h / 0.7
+    );
+  }
+
+  [data-highlight="yellow"] & {
+    --color-selection: var(--color-selection-highlight-yellow);
+  }
+
+  [data-highlight="green"] & {
+    --color-selection: var(--color-selection-highlight-green);
+  }
+
+  [data-highlight="pink"] & {
+    --color-selection: var(--color-selection-highlight-pink);
+  }
+
+  [data-highlight="purple"] & {
+    --color-selection: var(--color-selection-highlight-purple);
+  }
+
+  [data-highlight="blue"] & {
+    --color-selection: var(--color-selection-highlight-blue);
+  }
+
+  [data-highlight="grey"] & {
+    --color-selection: var(--color-selection-highlight-grey);
+  }
+
+  [data-highlight="charcoal"] & {
+    --color-selection: var(--color-selection-highlight-charcoal);
+  }
 }
 
 .note--dialog {

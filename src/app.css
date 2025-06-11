@@ -2,30 +2,37 @@
   --color-highlight-yellow: #e2b704;
   --color-text-highlight-yellow: #5c4a02;
   --color-surface-highlight-yellow: #e6b904;
+  --color-selection-highlight-yellow: #8f7300;
 
   --color-highlight-green: #6ab759;
   --color-text-highlight-green: #2c5427;
   --color-surface-highlight-green: #6ed261;
+  --color-selection-highlight-green: #3c862c;
 
   --color-highlight-pink: #e589c3;
   --color-text-highlight-pink: #5e364e;
   --color-surface-highlight-pink: #ea86c2;
+  --color-selection-highlight-pink: #af5089;
 
   --color-highlight-purple: #ae81e0;
   --color-text-highlight-purple: #503966;
   --color-surface-highlight-purple: #c78eff;
+  --color-selection-highlight-purple: #9159c7;
 
   --color-highlight-blue: #5fbfe6;
   --color-text-highlight-blue: #244d5c;
   --color-surface-highlight-blue: #59c0e7;
+  --color-selection-highlight-blue: #307b98;
 
   --color-highlight-grey: #999999;
   --color-text-highlight-grey: #444444;
   --color-surface-highlight-grey: #aaaaaa;
+  --color-selection-highlight-grey: #555555;
 
   --color-highlight-charcoal: #434343;
   --color-text-highlight-charcoal: #c6c6c6;
   --color-surface-highlight-charcoal: #454545;
+  --color-selection-highlight-charcoal: #555555;
 
   --color-text-0: #ffffff;
   --color-text-1: #ededed;
