@@ -49,24 +49,31 @@ async fn create_note(window: tauri::Window, label: String) {
     let mut width: f64 = NOTE_RECT.width;
     let mut height: f64 = NOTE_RECT.height;
 
-    let webview_window = window.get_webview_window(window.label()).unwrap();
-    if webview_window.label() != NOTES_LIST_LABEL {
+    if window.label() != NOTES_LIST_LABEL {
+        let webview_window = window.get_webview_window(window.label()).unwrap();
         let inner_position = webview_window.inner_position().unwrap();
         let inner_size = webview_window.inner_size().unwrap();
-        let scale_factor = webview_window
-            .current_monitor()
-            .unwrap()
-            .map(|m| m.scale_factor())
-            .unwrap_or(1.);
+
+        let current_monitor = webview_window.current_monitor().unwrap().unwrap();
+        let monitor_position = current_monitor.position();
+        let monitor_size = current_monitor.size();
+        let monitor_width: i32 = monitor_size.width.try_into().unwrap();
+        let scale_factor = current_monitor.scale_factor();
+
         let position: LogicalPosition<u32> = inner_position.to_logical(scale_factor);
         let size: LogicalSize<u32> = inner_size.to_logical(scale_factor);
-        x = position.x.into();
+
+        if inner_position.x > monitor_position.x + monitor_width / 2 {
+            x = (position.x - size.width).into();
+        } else {
+            x = (position.x + size.width).into();
+        }
         y = position.y.into();
         width = size.width.into();
         height = size.height.into();
     }
 
-    let store = webview_window.store(STORE_PATH).unwrap();
+    let store = window.store(STORE_PATH).unwrap();
     let value = store.get(STORE_KEY).expect("");
     let mut views: Vec<View> = serde_json::from_value(value).unwrap();
     views.push(View {
