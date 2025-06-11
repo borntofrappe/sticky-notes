@@ -60,7 +60,28 @@
 
 :where(ul) {
   padding-inline-start: 0;
-  list-style-position: inside;
+  list-style: none;
+
+  li {
+    --bullet-size: 1em;
+    position: relative;
+    padding-inline-start: var(--bullet-size);
+
+    &::before {
+      content: "";
+      background: currentColor;
+      width: var(--bullet-size);
+      height: var(--bullet-size);
+      position: absolute;
+      inset-inline-start: 0%;
+      inset-block-start: 0.5lh;
+      translate: 0% -45%;
+      mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4 -4 8 8"><circle r="4"/></svg>');
+      mask-size: 33%;
+      mask-position: 50% 50%;
+      mask-repeat: no-repeat;
+    }
+  }
 }
 
 :is(html, body) {
