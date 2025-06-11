@@ -98,11 +98,16 @@
     margin-block-start: var(--gap-0);
   }
 
-  time {
+  & > time {
     font-size: 0.8em;
     display: block;
     text-align: end;
     color: var(--color-text-highlight, inherit);
+  }
+
+  & > div {
+    max-block-size: 5lh;
+    overflow: hidden;
   }
 
   &:focus {
