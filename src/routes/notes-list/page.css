@@ -85,6 +85,7 @@
 }
 
 .notes-list--note {
+  user-select: none;
   font-size: 0.9em;
   padding: var(--padding-article);
   padding-block-end: calc(var(--padding-article) * 2);
