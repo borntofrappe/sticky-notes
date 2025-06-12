@@ -56,6 +56,10 @@
       );
     } else {
       const [note] = result;
+      await db.execute("UPDATE notes SET open = true WHERE label = $1", [
+        note.label,
+      ]);
+      note.open = true;
       document.documentElement.setAttribute(
         HIGHLIGHT_QUALIFIED_NAME,
         note.highlight
