@@ -27,8 +27,8 @@
     const date = new Date(dateString);
     const now = new Date();
     if (
-      date.getDate() === now.getDate() ||
-      date.getMonth() === now.getMonth() ||
+      date.getDate() === now.getDate() &&
+      date.getMonth() === now.getMonth() &&
       date.getFullYear() === now.getFullYear()
     ) {
       return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
