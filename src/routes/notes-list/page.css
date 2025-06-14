@@ -1,7 +1,5 @@
 .notes-list {
-  user-select: none;
   block-size: 100%;
-
   --button-size: 38px;
   --border-radius-window: 10px;
   --border-radius-article: 2px;
@@ -14,9 +12,20 @@
   --size-content-1: 140px;
   --size-content-2: 220px;
 
+  user-select: none;
   color: var(--color-text-0);
   background: var(--color-surface-0);
   border-radius: var(--border-radius-window);
+  display: flex;
+  flex-direction: column;
+
+  > .notes-list--content {
+    flex-grow: 1;
+    block-size: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-surface-2) transparent;
+  }
 }
 
 .notes-list--menu {
