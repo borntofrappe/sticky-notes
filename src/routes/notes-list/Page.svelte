@@ -93,8 +93,10 @@
           aria-label="Open note"
           tabindex="0"
           onkeydown={(event) => {
-            if (event.key !== "Enter") return;
-            showWindow(note.label);
+            if (["Enter", " "].includes(event.key)) {
+              event.preventDefault();
+              showWindow(note.label);
+            }
           }}
           ondblclick={() => {
             showWindow(note.label);
