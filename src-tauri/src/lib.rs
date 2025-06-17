@@ -244,10 +244,22 @@ pub fn run() {
                 store.set(STORE_KEY, json!(vec![default_view, notes_list_view]));
             }
 
-            let _ = store.save();
-
             let value = store.get(STORE_KEY).expect("");
-            let views: Vec<View> = serde_json::from_value(value).unwrap();
+            let mut views: Vec<View> = serde_json::from_value(value).unwrap();
+
+            let none_visible = views.iter().find(|view| view.visible == true).is_none();
+            if none_visible {
+                if let Some(view) = views
+                    .iter_mut()
+                    .find(|v| *v.label == String::from(NOTES_LIST_LABEL))
+                {
+                    view.visible = true;
+                }
+                store.set(STORE_KEY, json!(views));
+            }
+
+            let _ = store.save();
+            store.close_resource();
 
             for view in views {
                 let View {
@@ -271,8 +283,6 @@ pub fn run() {
                     .build()?;
                 }
             }
-
-            store.close_resource();
 
             Ok(())
         })
