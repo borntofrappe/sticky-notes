@@ -25,6 +25,7 @@ const STORE_PATH: &str = "store.bin";
 const DB_PATH: &str = "sqlite:notes.db";
 const STORE_KEY: &str = "views";
 const NOTES_LIST_LABEL: &str = "notes-list";
+const TITLE: &str = "Sticky Notes";
 const TRANSPARENT: bool = true;
 const DECORATIONS: bool = false;
 
@@ -97,6 +98,7 @@ async fn create_note(window: tauri::Window, label: String) {
     )
     .position(x, y)
     .inner_size(width, height)
+    .title(TITLE)
     .transparent(TRANSPARENT)
     .decorations(DECORATIONS)
     .build()
@@ -193,6 +195,7 @@ async fn show_window(window: tauri::Window, label: String) {
                 )
                 .position(view.x, view.y)
                 .inner_size(view.width, view.height)
+                .title(TITLE)
                 .transparent(TRANSPARENT)
                 .decorations(DECORATIONS)
                 .build()
@@ -278,6 +281,7 @@ pub fn run() {
                     )
                     .position(x, y)
                     .inner_size(width, height)
+                    .title(TITLE)
                     .transparent(TRANSPARENT)
                     .decorations(DECORATIONS)
                     .build()?;
