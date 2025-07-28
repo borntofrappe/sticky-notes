@@ -27,7 +27,6 @@
   const label = getLabelContext();
   let options = $state.raw<Set<Command>>(new SvelteSet());
   let editor: HTMLDivElement;
-  let pointerdown: boolean = false;
   const saveDebounceDelay = 100;
   let timeoutID: number;
 
@@ -83,19 +82,10 @@
     emitTo(NOTES_LIST_LABEL, NOTES_LIST_EVENT_NAME);
   };
 
-  const oninput = () => {
-    clearTimeout(timeoutID);
-
-    timeoutID = setTimeout(() => {
-      saveNote();
-    }, saveDebounceDelay);
-  };
-
   const toggleOption = (option: Command) => {
     document.execCommand(option, false, undefined);
 
     editor.focus();
-    updateOptions();
   };
 
   const updateOptions = async () => {
@@ -116,25 +106,6 @@
     });
 
     options = currentCommands;
-  };
-
-  const onpointerdown = () => {
-    pointerdown = true;
-    updateOptions();
-  };
-
-  const onpointermove = () => {
-    if (pointerdown) {
-      updateOptions();
-    }
-  };
-
-  const onpointerleave = () => {
-    pointerdown = false;
-  };
-
-  const onpointerup = () => {
-    pointerdown = false;
   };
 
   const onshortcut = async (event: KeyboardEvent) => {
@@ -159,46 +130,44 @@
     }
   };
 
+  const onselectionchange = () => {
+    updateOptions();
+  };
+
+  const oninput = () => {
+    clearTimeout(timeoutID);
+    timeoutID = setTimeout(() => {
+      saveNote();
+    }, saveDebounceDelay);
+  };
+
   const onkeydown = async (event: KeyboardEvent) => {
     const { key, ctrlKey, shiftKey } = event;
 
-    if (
-      ["Backspace", "ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"].includes(
-        key
-      ) ||
-      (ctrlKey && key.toLowerCase() === "a")
-    ) {
-      updateOptions();
-      event.stopPropagation();
-    } else {
-      if (ctrlKey && shiftKey && key.toLowerCase() === "l") {
+    if (ctrlKey && shiftKey && key.toLowerCase() === "l") {
+      event.preventDefault();
+      toggleOption("insertUnorderedList");
+    } else if (ctrlKey) {
+      let command: Command | undefined;
+
+      switch (key.toLowerCase()) {
+        case "b":
+          command = "bold";
+          break;
+        case "i":
+          command = "italic";
+          break;
+        case "u":
+          command = "underline";
+          break;
+        case "t":
+          command = "strikeThrough";
+          break;
+      }
+
+      if (command) {
         event.preventDefault();
-        event.stopPropagation();
-        toggleOption("insertUnorderedList");
-      } else if (ctrlKey) {
-        let command: Command | undefined;
-
-        switch (key.toLowerCase()) {
-          case "b":
-            command = "bold";
-            break;
-          case "i":
-            command = "italic";
-            break;
-          case "u":
-            command = "underline";
-            break;
-          case "t":
-            command = "strikeThrough";
-            break;
-        }
-
-        if (command) {
-          event.preventDefault();
-          event.stopPropagation();
-
-          toggleOption(command);
-        }
+        toggleOption(command);
       }
     }
   };
@@ -206,16 +175,14 @@
 
 <svelte:window onkeydown={onshortcut} />
 
+<svelte:document {onselectionchange} />
+
 <main class="note">
   <Menu />
   <div
     tabindex="0"
     role="textbox"
     {oninput}
-    {onpointerdown}
-    {onpointerup}
-    {onpointerleave}
-    {onpointermove}
     {onkeydown}
     bind:this={editor}
     contenteditable="true"
@@ -227,18 +194,23 @@
     {options}
     bold={() => {
       toggleOption("bold");
+      updateOptions();
     }}
     italic={() => {
       toggleOption("italic");
+      updateOptions();
     }}
     underline={() => {
       toggleOption("underline");
+      updateOptions();
     }}
     strikeThrough={() => {
       toggleOption("strikeThrough");
+      updateOptions();
     }}
     insertUnorderedList={() => {
       toggleOption("insertUnorderedList");
+      updateOptions();
     }}
   />
 </main>
