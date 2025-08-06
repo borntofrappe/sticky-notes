@@ -171,6 +171,22 @@
       }
     }
   };
+
+  const onpaste = (event: ClipboardEvent) => {
+    if (!event.clipboardData) {
+      console.warn("ClipboardData not available on event.");
+      return;
+    }
+
+    event.preventDefault();
+
+    const paste = event.clipboardData.getData("text");
+    const selection = window.getSelection();
+    if (selection === null || selection.rangeCount === 0) return;
+    selection.deleteFromDocument();
+    selection.getRangeAt(0).insertNode(document.createTextNode(paste));
+    selection.collapseToEnd();
+  };
 </script>
 
 <svelte:window onkeydown={onshortcut} />
@@ -184,6 +200,7 @@
     role="textbox"
     {oninput}
     {onkeydown}
+    {onpaste}
     bind:this={editor}
     contenteditable="true"
     class="note--mid note--editor"
