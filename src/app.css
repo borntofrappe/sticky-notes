@@ -88,6 +88,10 @@
   block-size: 100%;
 }
 
+html {
+  font-size: 15px;
+}
+
 body {
   font-family: system-ui;
   color: var(--color-text-1);
