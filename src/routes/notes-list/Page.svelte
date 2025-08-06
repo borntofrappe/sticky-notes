@@ -10,6 +10,7 @@
 
   import {
     DB_PATH,
+    HIGHLIGHT_QUALIFIED_NAME,
     NOTES_LIST_EVENT_NAME,
   } from "$lib/constants";
   import { getLabelContext } from "$lib/context";
@@ -38,6 +39,12 @@
   const update = async () => {
     const db = await Database.load(DB_PATH);
     notes = sort(await db.select("SELECT * FROM notes")) as [Note] | [];
+
+    if (notes.length === 0) return;
+    document.documentElement.setAttribute(
+      HIGHLIGHT_QUALIFIED_NAME,
+      notes[0].highlight
+    );
   };
 
   onDestroy(() => {
