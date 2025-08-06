@@ -8,7 +8,10 @@
   import { fade } from "svelte/transition";
   import { flip } from "svelte/animate";
 
-  import { DB_PATH, NOTES_LIST_EVENT_NAME } from "$lib/constants";
+  import {
+    DB_PATH,
+    NOTES_LIST_EVENT_NAME,
+  } from "$lib/constants";
   import { getLabelContext } from "$lib/context";
   import { createNote, showWindow, closeWindow } from "$lib/tauri-commands";
 
@@ -28,14 +31,14 @@
   };
 
   onMount(async () => {
-    const db = await Database.load(DB_PATH);
-    notes = (await db.select("SELECT * FROM notes")) as [Note] | [];
-
-    unlisten = await listen(NOTES_LIST_EVENT_NAME, async () => {
-      const db = await Database.load(DB_PATH);
-      notes = (await db.select("SELECT * FROM notes")) as [Note] | [];
-    });
+    update();
+    unlisten = await listen(NOTES_LIST_EVENT_NAME, update);
   });
+
+  const update = async () => {
+    const db = await Database.load(DB_PATH);
+    notes = sort(await db.select("SELECT * FROM notes")) as [Note] | [];
+  };
 
   onDestroy(() => {
     unlisten();
@@ -84,7 +87,7 @@
         <figcaption>Tap the new note button above to create a note</figcaption>
       </figure>
     {:else}
-      {#each sort(notes) as note (note.label)}
+      {#each notes as note (note.label)}
         <div
           in:fade|global={{ duration: DURATIONS.in }}
           out:fade|global={{ duration: DURATIONS.out }}
