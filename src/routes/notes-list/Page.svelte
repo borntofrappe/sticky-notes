@@ -73,7 +73,7 @@
   <Menu />
 
   <main class="notes-list--content">
-    <h1>Sticky notes</h1>
+    <h1>Sticky Notes</h1>
 
     {#if notes.length === 0}
       <figure
